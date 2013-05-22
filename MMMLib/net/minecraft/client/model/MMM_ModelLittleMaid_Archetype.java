@@ -1,23 +1,23 @@
-package net.minecraft.src;
+package net.minecraft.client.model;
 
-import java.util.Random;
+import net.minecraft.util.MathHelper;
 
 import org.lwjgl.opengl.GL11;
 
 /**
- * ‹ŒŒ^ƒ‚ƒfƒ‹ŒİŠ·‚Ìƒx[ƒXƒ‚ƒfƒ‹B
- * ŠÖßƒŠƒ“ƒN‚µ‚Ä‚¢‚È‚¢
+ * æ—§å‹ãƒ¢ãƒ‡ãƒ«äº’æ›ã®ãƒ™ãƒ¼ã‚¹ãƒ¢ãƒ‡ãƒ«ã€‚
+ * é–¢ç¯€ãƒªãƒ³ã‚¯ã—ã¦ã„ãªã„
  */
 public class MMM_ModelLittleMaid_Archetype extends MMM_ModelLittleMaid {
 
 	// fields
 	public MMM_ModelRenderer bipedHeadwear;
-	public MMM_ModelRenderer ChignonR;
-	public MMM_ModelRenderer ChignonL;
 	public MMM_ModelRenderer ChignonB;
-	public MMM_ModelRenderer Tail;
-	public MMM_ModelRenderer SideTailR;
+	public MMM_ModelRenderer ChignonL;
+	public MMM_ModelRenderer ChignonR;
 	public MMM_ModelRenderer SideTailL;
+	public MMM_ModelRenderer SideTailR;
+	public MMM_ModelRenderer Tail;
 
 	public MMM_ModelLittleMaid_Archetype() {
 		super();
@@ -31,6 +31,51 @@ public class MMM_ModelLittleMaid_Archetype extends MMM_ModelLittleMaid {
 		super(f, f1);
 	}
 
+	public void equippedBlockPosition() {
+		// æ‰‹æŒã¡ãƒ–ãƒ­ãƒƒã‚¯ã®è¡¨ç¤ºä½ç½®
+		GL11.glTranslatef(0.0F, 0.1275F, -0.3125F);
+	}
+
+	public void equippedHeadItemPosition() {
+		// é ­éƒ¨ç€è£…ã‚¢ã‚¤ãƒ†ãƒ ã®è¡¨ç¤ºä½ç½®
+		GL11.glTranslatef(0.0F, 1.0F, 0.0F);
+	}
+
+	public void equippedItemBow() {
+		// æ‰‹æŒã¡å¼“ã®è¡¨ç¤ºä½ç½®
+		// GL11.glTranslatef(-0.07F, 0.005F, 0.3F);
+		equippedItemPosition3D();
+		// GL11.glTranslatef(-0.09F, -0.125F, 0.3F);
+		GL11.glTranslatef(-0.05F, -0.075F, 0.1F);
+	}
+
+	public void equippedItemPosition() {
+		// æ‰‹æŒã¡ã‚¢ã‚¤ãƒ†ãƒ ã®è¡¨ç¤ºä½ç½®
+		GL11.glTranslatef(0.20F, 0.0800F, -0.0875F);
+	}
+
+	public void equippedItemPosition3D() {
+		// æ‰‹æŒã¡ï¼“Dã‚¢ã‚¤ãƒ†ãƒ ã®è¡¨ç¤ºä½ç½®
+		GL11.glTranslatef(0.02F, 0.1300F, 0.0F);
+	}
+
+	@Override
+	public float getHeight() {
+		// èº«é•·
+		return 1.35F;
+	}
+
+	@Override
+	public String getUsingTexture() {
+		return "default";
+	}
+
+	@Override
+	public float getWidth() {
+		// æ¨ªå¹…
+		return 0.5F;
+	}
+
 	@Override
 	public void initModel(float psize, float pyoffset) {
 		heldItemLeft = 0;
@@ -41,7 +86,7 @@ public class MMM_ModelLittleMaid_Archetype extends MMM_ModelLittleMaid {
 
 		pyoffset += 8F;
 
-		// ‘•”õˆÊ’u
+		// è£…å‚™ä½ç½®
 		Arms = new MMM_ModelRenderer[1];
 		Arms[0] = new MMM_ModelRenderer(this, 0, 0);
 		Arms[0].setRotationPointMM(-1F, 5F, -1F);
@@ -129,51 +174,30 @@ public class MMM_ModelLittleMaid_Archetype extends MMM_ModelLittleMaid {
 	}
 
 	@Override
-	public String getUsingTexture() {
-		return "default";
-	}
-
-	public float getHeight() {
-		// g’·
-		return 1.35F;
-	}
-
-	public float getWidth() {
-		// ‰¡•
-		return 0.5F;
-	}
-
-	public void equippedBlockPosition() {
-		// è‚¿ƒuƒƒbƒN‚Ì•\¦ˆÊ’u
-		GL11.glTranslatef(0.0F, 0.1275F, -0.3125F);
-	}
-
-	public void equippedItemPosition3D() {
-		// è‚¿‚RDƒAƒCƒeƒ€‚Ì•\¦ˆÊ’u
-		GL11.glTranslatef(0.02F, 0.1300F, 0.0F);
-	}
-
-	public void equippedItemPosition() {
-		// è‚¿ƒAƒCƒeƒ€‚Ì•\¦ˆÊ’u
-		GL11.glTranslatef(0.20F, 0.0800F, -0.0875F);
-	}
-
-	public void equippedHeadItemPosition() {
-		// “ª•”’…‘•ƒAƒCƒeƒ€‚Ì•\¦ˆÊ’u
-		GL11.glTranslatef(0.0F, 1.0F, 0.0F);
-	}
-
-	public void equippedItemBow() {
-		// è‚¿‹|‚Ì•\¦ˆÊ’u
-		// GL11.glTranslatef(-0.07F, 0.005F, 0.3F);
-		equippedItemPosition3D();
-		// GL11.glTranslatef(-0.09F, -0.125F, 0.3F);
-		GL11.glTranslatef(-0.05F, -0.075F, 0.1F);
-	}
-
 	public boolean isItemHolder() {
-		// ƒAƒCƒeƒ€‚ğ‚Á‚Ä‚¢‚é‚Æ‚«‚Éè‚ğ‘O‚Éo‚·‚©‚Ç‚¤‚©B
+		// ã‚¢ã‚¤ãƒ†ãƒ ã‚’æŒã£ã¦ã„ã‚‹ã¨ãã«æ‰‹ã‚’å‰ã«å‡ºã™ã‹ã©ã†ã‹ã€‚
 		return false;
+	}
+
+	@Override
+	public void renderItems() {
+		// æ‰‹æŒã¡ã®è¡¨ç¤º
+		GL11.glPushMatrix();
+		if (entityCaps != null) {
+			int ldominant = MMM_ModelCapsHelper.getCapsValueInt(entityCaps, caps_dominantArm);
+			Arms[0].loadMatrix().renderItems(this, false, ldominant);
+			// é ­éƒ¨è£…é£¾å“
+			boolean lplanter = MMM_ModelCapsHelper.getCapsValueBoolean(entityCaps, caps_isPlanter);
+			if (MMM_ModelCapsHelper.getCapsValueBoolean(entityCaps, caps_isCamouflage) || lplanter) {
+				HeadMount.loadMatrix();
+				if (lplanter) {
+					HeadTop.renderItemsHead(this);
+				} else {
+					HeadMount.renderItemsHead(this);
+				}
+			}
+		}
+		GL11.glPopMatrix();
 	}
 
 	@Override
@@ -187,7 +211,7 @@ public class MMM_ModelLittleMaid_Archetype extends MMM_ModelLittleMaid {
 	@Override
 	public void setRotationAnglesMM(float par1, float par2,
 			float pTicksExisted, float pHeadYaw, float pHeadPitch, float par6) {
-//		super.setRotationAnglesMM(par1, par2, pTicksExisted, pHeadYaw, pHeadPitch, par6);
+		//		super.setRotationAnglesMM(par1, par2, pTicksExisted, pHeadYaw, pHeadPitch, par6);
 
 		bipedHead.rotateAngleY = pHeadYaw / 57.29578F;
 		bipedHead.rotateAngleX = pHeadPitch / 57.29578F;
@@ -203,7 +227,7 @@ public class MMM_ModelLittleMaid_Archetype extends MMM_ModelLittleMaid {
 		bipedLeftLeg.rotateAngleY = 0.0F;
 
 		if (isRiding) {
-			// æ‚è•¨‚Éæ‚Á‚Ä‚¢‚é
+			// ä¹—ã‚Šç‰©ã«ä¹—ã£ã¦ã„ã‚‹
 			bipedRightArm.rotateAngleX += -0.6283185F;
 			bipedLeftArm.rotateAngleX += -0.6283185F;
 			bipedRightLeg.rotateAngleX = -1.256637F;
@@ -211,20 +235,20 @@ public class MMM_ModelLittleMaid_Archetype extends MMM_ModelLittleMaid {
 			bipedRightLeg.rotateAngleY = 0.3141593F;
 			bipedLeftLeg.rotateAngleY = -0.3141593F;
 		}
-		// ƒAƒCƒeƒ€‚Á‚Ä‚é‚Æ‚«‚Ì˜rU‚è‚ğ—}‚¦‚é
+		// ã‚¢ã‚¤ãƒ†ãƒ æŒã£ã¦ã‚‹ã¨ãã®è…•æŒ¯ã‚Šã‚’æŠ‘ãˆã‚‹
 		if (heldItemLeft != 0) {
 			bipedLeftArm.rotateAngleX = bipedLeftArm.rotateAngleX * 0.5F
-					- 0.3141593F * (float) heldItemLeft;
+					- 0.3141593F * heldItemLeft;
 		}
 		if (heldItemRight != 0) {
 			bipedRightArm.rotateAngleX = bipedRightArm.rotateAngleX * 0.5F
-					- 0.3141593F * (float) heldItemRight;
+					- 0.3141593F * heldItemRight;
 		}
 
 		bipedRightArm.rotateAngleY = 0.0F;
 		bipedLeftArm.rotateAngleY = 0.0F;
 		if (onGround > -9990F && !aimedBow) {
-			// ˜rU‚è
+			// è…•æŒ¯ã‚Š
 			float f6 = onGround;
 			bipedBody.rotateAngleY = MathHelper
 					.sin(mh_sqrt_float(f6) * 3.141593F * 2.0F) * 0.2F;
@@ -247,13 +271,13 @@ public class MMM_ModelLittleMaid_Archetype extends MMM_ModelLittleMaid {
 			float f7 = mh_sin(f6 * 3.141593F);
 			float f8 = mh_sin(onGround * 3.141593F)
 					* -(bipedHead.rotateAngleX - 0.7F) * 0.75F;
-			bipedRightArm.rotateAngleX -= (double) f7 * 1.2D + (double) f8;
+			bipedRightArm.rotateAngleX -= f7 * 1.2D + f8;
 			bipedRightArm.rotateAngleY += bipedBody.rotateAngleY * 2.0F;
 			bipedRightArm.rotateAngleZ = mh_sin(onGround * 3.141593F)
 					* -0.4F;
 		}
 		if (isSneak) {
-			// ‚µ‚á‚ª‚İ
+			// ã—ã‚ƒãŒã¿
 			bipedBody.rotateAngleX = 0.5F;
 			bipedRightLeg.rotateAngleX -= 0.0F;
 			bipedLeftLeg.rotateAngleX -= 0.0F;
@@ -270,7 +294,7 @@ public class MMM_ModelLittleMaid_Archetype extends MMM_ModelLittleMaid {
 			Skirt.rotationPointZ = 2.7F;
 			Skirt.rotateAngleX = 0.2F;
 		} else {
-			// ’Êí—§‚¿
+			// é€šå¸¸ç«‹ã¡
 			bipedBody.rotateAngleX = 0.0F;
 			bipedRightLeg.rotationPointZ = 0.0F;
 			bipedLeftLeg.rotationPointZ = 0.0F;
@@ -283,7 +307,7 @@ public class MMM_ModelLittleMaid_Archetype extends MMM_ModelLittleMaid {
 			Skirt.rotateAngleX = 0.0F;
 		}
 		if (isWait) {
-			// ‘Ò‹@ó‘Ô‚Ì“Á•Ê•\¦
+			// å¾…æ©ŸçŠ¶æ…‹ã®ç‰¹åˆ¥è¡¨ç¤º
 			bipedRightArm.rotateAngleX = mh_sin(pTicksExisted * 0.067F) * 0.05F - 0.7F;
 			bipedRightArm.rotateAngleY = 0.0F;
 			bipedRightArm.rotateAngleZ = -0.4F;
@@ -292,7 +316,7 @@ public class MMM_ModelLittleMaid_Archetype extends MMM_ModelLittleMaid {
 			bipedLeftArm.rotateAngleZ = 0.4F;
 		} else {
 			if (aimedBow) {
-				// ‹|\‚¦
+				// å¼“æ§‹ãˆ
 				float f6 = mh_sin(onGround * 3.141593F);
 				float f7 = mh_sin((1.0F - (1.0F - onGround)
 						* (1.0F - onGround)) * 3.141593F);
@@ -319,7 +343,7 @@ public class MMM_ModelLittleMaid_Archetype extends MMM_ModelLittleMaid {
 				bipedRightArm.rotateAngleY += bipedHead.rotateAngleY;
 				bipedLeftArm.rotateAngleY += bipedHead.rotateAngleY;
 			} else {
-				// ’Êí
+				// é€šå¸¸
 				bipedRightArm.rotateAngleZ += 0.5F;
 				bipedLeftArm.rotateAngleZ -= 0.5F;
 				bipedRightArm.rotateAngleZ += mh_cos(pTicksExisted * 0.09F) * 0.05F + 0.05F;
@@ -328,27 +352,6 @@ public class MMM_ModelLittleMaid_Archetype extends MMM_ModelLittleMaid {
 				bipedLeftArm.rotateAngleX -= mh_sin(pTicksExisted * 0.067F) * 0.05F;
 			}
 		}
-	}
-
-	@Override
-	public void renderItems() {
-		// è‚¿‚Ì•\¦
-		GL11.glPushMatrix();
-		if (entityCaps != null) {
-			int ldominant = MMM_ModelCapsHelper.getCapsValueInt(entityCaps, caps_dominantArm);
-			Arms[0].loadMatrix().renderItems(this, false, ldominant);
-			// “ª•”‘•ü•i
-			boolean lplanter = MMM_ModelCapsHelper.getCapsValueBoolean(entityCaps, caps_isPlanter);
-			if (MMM_ModelCapsHelper.getCapsValueBoolean(entityCaps, caps_isCamouflage) || lplanter) {
-				HeadMount.loadMatrix();
-				if (lplanter) {
-					HeadTop.renderItemsHead(this);
-				} else {
-					HeadMount.renderItemsHead(this);
-				}
-			}
-		}
-		GL11.glPopMatrix();
 	}
 
 }

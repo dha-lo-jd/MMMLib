@@ -1,15 +1,16 @@
 package net.minecraft.src;
 
-import java.lang.reflect.Method;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.ItemRenderer;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL13;
-
-import net.minecraft.client.Minecraft;
 
 public class MMM_ItemRenderer extends ItemRenderer {
 
-	// ƒvƒ‰ƒCƒx[ƒg•Ï”‚ğg‚¦‚é‚æ‚¤‚É
+	// ãƒ—ãƒ©ã‚¤ãƒ™ãƒ¼ãƒˆå¤‰æ•°ã‚’ä½¿ãˆã‚‹ã‚ˆã†ã«
 	public Minecraft mc;
 	public ItemStack itemToRender;
 	public float equippedProgress;
@@ -105,7 +106,7 @@ public class MMM_ItemRenderer extends ItemRenderer {
 		prevEquippedProgress = 0.0F;
 		
 		try {
-			// ƒ[ƒJƒ‹•Ï”‚ğŠm•Û
+			// ãƒ­ãƒ¼ã‚«ãƒ«å¤‰æ•°ã‚’ç¢ºä¿
 			itemToRender = (ItemStack)ModLoader.getPrivateValue(ItemRenderer.class, this, 1);
 			equippedProgress = (Float)ModLoader.getPrivateValue(ItemRenderer.class, this, 2);
 			prevEquippedProgress = (Float)ModLoader.getPrivateValue(ItemRenderer.class, this, 3);

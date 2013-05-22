@@ -1,11 +1,13 @@
-package net.minecraft.src;
+package net.minecraft.client.model;
 
 import java.util.List;
 import java.util.Random;
 
+import net.minecraft.util.MathHelper;
+
 public class MMM_ModelBase extends ModelBase {
 
-	// ゲッター、セッター群
+	// 繧ｲ繝�繧ｿ繝ｼ縲√そ繝�繧ｿ繝ｼ鄒､
 	public List getBoxList() {
 		return boxList;
 	}
@@ -39,7 +41,7 @@ public class MMM_ModelBase extends ModelBase {
 	}
 
 
-	// MathHelperトンネル関数群
+	// MathHelper繝医Φ繝阪Ν髢｢謨ｰ鄒､
 	public static final float mh_sin(float f) {
 		f = f % 6.283185307179586F;
 		f = (f < 0F) ? 360 + f : f;

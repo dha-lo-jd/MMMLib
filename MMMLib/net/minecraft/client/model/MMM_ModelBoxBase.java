@@ -1,9 +1,12 @@
-package net.minecraft.src;
+package net.minecraft.client.model;
+
+import net.minecraft.client.renderer.Tessellator;
+
 
 public abstract class MMM_ModelBoxBase extends ModelBox {
 
 	/**
-	 * ‚±‚¿‚ç‚ğ•K‚¸À‘•‚·‚é‚±‚ÆB
+	 * ã“ã¡ã‚‰ã‚’å¿…ãšå®Ÿè£…ã™ã‚‹ã“ã¨ã€‚
 	 * @param pMRenderer
 	 * @param pArg
 	 */
@@ -13,9 +16,9 @@ public abstract class MMM_ModelBoxBase extends ModelBox {
 				(Integer)pArg[5], (Integer)pArg[6], (Integer)pArg[7], (Float)pArg[8]);
 	}
 	/**
-	 * ’Êí‚ÌƒCƒ“ƒXƒ^ƒ“ƒXì¬‚Í„§‚³‚ê‚Ü‚¹‚ñB
+	 * é€šå¸¸ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ä½œæˆã¯æ¨å¥¨ã•ã‚Œã¾ã›ã‚“ã€‚
 	 */
-	protected MMM_ModelBoxBase(ModelRenderer par1ModelRenderer, int par2, int par3,
+	public MMM_ModelBoxBase(ModelRenderer par1ModelRenderer, int par2, int par3,
 			float par4, float par5, float par6,
 			int par7, int par8, int par9, float par10) {
 		super(par1ModelRenderer, par2, par3, par4, par5, par6, par7, par8, par9, par10);

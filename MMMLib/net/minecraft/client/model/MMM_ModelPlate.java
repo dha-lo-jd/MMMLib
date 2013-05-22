@@ -1,4 +1,6 @@
-package net.minecraft.src;
+package net.minecraft.client.model;
+
+import net.minecraft.src.ModLoader;
 
 public class MMM_ModelPlate extends MMM_ModelBoxBase {
 
@@ -26,14 +28,14 @@ public class MMM_ModelPlate extends MMM_ModelBoxBase {
 
 	private MMM_ModelPlate(ModelRenderer modelrenderer, int pTextureX, int pTextureY,
 			float pX, float pY, float pZ, int pWidth, int pHeight, int pPlane, float pZoom) {
-		// e‚ÍŒÄ‚ñ‚Å‚é‚¯‚ÇA“à—e‚Í–¢g—p
+		// è¦ªã¯å‘¼ã‚“ã§ã‚‹ã‘ã©ã€å†…å®¹ã¯æœªä½¿ç”¨
 		super(modelrenderer, pTextureX, pTextureY, pX, pY, pZ, pWidth, pHeight, pPlane, pZoom);
 		
 		float f4;
 		float f5;
 		float f6;
 		
-		// i1 ‚Í•½–Ê‚Ì¶¬ˆÊ’u
+		// i1 ã¯å¹³é¢ã®ç”Ÿæˆä½ç½®
 		switch (pPlane & 3) {
 		case 0:
 			// xy
@@ -109,7 +111,7 @@ public class MMM_ModelPlate extends MMM_ModelBoxBase {
 		// f4 += f3;
 		// f5 += f3;
 		// f6 += f3;
-		// –Ê‚Ì–@–Ê‚ğ”½“]‚·‚é
+		// é¢ã®æ³•é¢ã‚’åè»¢ã™ã‚‹
 		if (modelrenderer.mirror) {
 			if (pPlane == 0 && pPlane == 4) {
 				// xy
@@ -143,7 +145,7 @@ public class MMM_ModelPlate extends MMM_ModelBoxBase {
 		vertexPositions[3] = positiontexturevertex3;
 		
 		if ((pPlane & 4) > 0) {
-			// ‹tü‚è
+			// é€†å‘¨ã‚Š
 			quadList[0] = new TexturedQuad(
 					new PositionTextureVertex[] {
 							positiontexturevertex,
@@ -164,7 +166,7 @@ public class MMM_ModelPlate extends MMM_ModelBoxBase {
 					modelrenderer.textureWidth,
 					modelrenderer.textureHeight);
 		}
-		// ÀÛ‚Ìƒ|ƒŠƒSƒ“‚ğŒp³Œ³‚Ì•Ï”‚É“Ë‚Á‚Ş
+		// å®Ÿéš›ã®ãƒãƒªã‚´ãƒ³ã‚’ç¶™æ‰¿å…ƒã®å¤‰æ•°ã«çªã£è¾¼ã‚€
 		try {
 			ModLoader.setPrivateValue(ModelBox.class, this, 0, vertexPositions);
 			ModLoader.setPrivateValue(ModelBox.class, this, 1, quadList);

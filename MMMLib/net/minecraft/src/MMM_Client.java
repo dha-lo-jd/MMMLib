@@ -1,6 +1,12 @@
 package net.minecraft.src;
 
-import static net.minecraft.src.mod_MMM_MMMLib.Debug;
+import static net.minecraft.src.mod_MMM_MMMLib.*;
+import net.minecraft.client.multiplayer.NetClientHandler;
+import net.minecraft.client.renderer.entity.RenderBiped;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.entity.RenderPlayer;
+import net.minecraft.entity.Entity;
+import net.minecraft.network.packet.Packet250CustomPayload;
 
 public class MMM_Client {
 
@@ -19,11 +25,11 @@ public class MMM_Client {
 			mod_MMM_MMMLib.Debug("replace RenderManager.itemRenderer.");
 			RenderManager.instance.itemRenderer = itemRenderer;
 		}
-		// GUI‚Ì•\¦‚ğ•Ï‚¦‚é‚É‚ÍíŠÄ‹‚ª•K—vH
+		// GUIã®è¡¨ç¤ºã‚’å¤‰ãˆã‚‹ã«ã¯å¸¸æ™‚ç›£è¦–ãŒå¿…è¦ï¼Ÿ
 	}
 
 	public static void clientCustomPayload(NetClientHandler var1, Packet250CustomPayload var2) {
-		// ƒNƒ‰ƒCƒAƒ“ƒg‘¤‚Ì“ÁêƒpƒPƒbƒgóM“®ì
+		// ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆå´ã®ç‰¹æ®Šãƒ‘ã‚±ãƒƒãƒˆå—ä¿¡å‹•ä½œ
 		byte lmode = var2.data[0];
 		int leid = 0;
 		Entity lentity = null;
@@ -36,11 +42,11 @@ public class MMM_Client {
 		
 		switch (lmode) {
 		case MMM_Statics.Client_SetTextureIndex:
-			// –â‚¢‡‚í‚¹‚½ƒeƒNƒXƒ`ƒƒƒpƒbƒN‚ÌŠÇ—”Ô†‚ğó‚¯æ‚é
+			// å•ã„åˆã‚ã›ãŸãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ‘ãƒƒã‚¯ã®ç®¡ç†ç•ªå·ã‚’å—ã‘å–ã‚‹
 			MMM_TextureManager.reciveFormServerSetTexturePackIndex(var2.data);
 			break;
 		case MMM_Statics.Client_SetTexturePackName:
-			// ŠÇ—”Ô†‚É“o˜^‚³‚ê‚Ä‚¢‚éƒeƒNƒXƒ`ƒƒƒpƒbƒN‚Ìî•ñ‚ğó‚¯æ‚é
+			// ç®¡ç†ç•ªå·ã«ç™»éŒ²ã•ã‚Œã¦ã„ã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ‘ãƒƒã‚¯ã®æƒ…å ±ã‚’å—ã‘å–ã‚‹
 			MMM_TextureManager.reciveFromServerSetTexturePackName(var2.data);
 			break;
 		}
@@ -72,7 +78,7 @@ public class MMM_Client {
 	}
 
 	public static void setArmorPrefix() {
-		// ƒA[ƒ}[ƒvƒŠƒtƒBƒbƒNƒX‚ğİ’è
+		// ã‚¢ãƒ¼ãƒãƒ¼ãƒ—ãƒªãƒ•ã‚£ãƒƒã‚¯ã‚¹ã‚’è¨­å®š
 		try {
 			ModLoader.setPrivateValue(RenderBiped.class, null, 4, ModLoader.getPrivateValue(RenderPlayer.class, null, 3));
 		} catch (Exception e) {

@@ -1,8 +1,14 @@
 package net.minecraft.src;
 
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.MMM_EntityDummy;
+import net.minecraft.util.MathHelper;
+
 import org.lwjgl.opengl.EXTRescaleNormal;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GLSync;
 
 public class MMM_RenderDummy extends Render {
 

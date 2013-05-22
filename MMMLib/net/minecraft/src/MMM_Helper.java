@@ -1,11 +1,9 @@
 package net.minecraft.src;
 
-import static net.minecraft.src.mod_MMM_MMMLib.Debug;
-import java.io.ByteArrayInputStream;
+import static net.minecraft.src.mod_MMM_MMMLib.*;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,17 +12,36 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityList;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.inventory.Container;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemPotion;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.FurnaceRecipes;
+import net.minecraft.pathfinding.PathNavigate;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumMovingObjectType;
+import net.minecraft.util.MathHelper;
+import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.Vec3;
+import net.minecraft.world.World;
+import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.SpawnListEntry;
 
 public class MMM_Helper {
 
-	public static final boolean isClient;
 	public static final Package fpackage;
-	public static final String packegeBase;
+	public static final boolean isClient;
 	public static final boolean isForge = ModLoader.isModLoaded("Forge");
 	public static final Minecraft mc;
 	public static Method methGetSmeltingResultForge = null;
-	protected static final Map<Class, Class>replaceEntitys = new HashMap<Class, Class>();
-	
+	public static final String packegeBase;
+	public static final Map<Class, Class> replaceEntitys = new HashMap<Class, Class>();
+
 	static {
 		fpackage = ModLoader.class.getPackage();
 		packegeBase = fpackage == null ? "" : fpackage.getName().concat(".");
@@ -33,9 +50,9 @@ public class MMM_Helper {
 		try {
 			lm = ModLoader.getMinecraftInstance();
 		} catch (Exception e) {
-//			e.printStackTrace();
+			//			e.printStackTrace();
 		} catch (Error e) {
-//			e.printStackTrace();
+			//			e.printStackTrace();
 		}
 		mc = lm;
 		isClient = mc != null;
@@ -45,39 +62,143 @@ public class MMM_Helper {
 			} catch (Exception e) {
 			}
 		}
-		
+
 	}
 
-	/**
-	 * Œ»İ‚ÌÀsŠÂ‹«‚ªƒ[ƒJƒ‹‚©‚Ç‚¤‚©‚ğ”»’è‚·‚éB
-	 */
-	public static boolean isLocalPlay() {
-		return isClient && mc.isIntegratedServerRunning();
-	}
+	// çŠ¶æ³åˆ¤æ–­è¦é–¢æ•°ç¾¤
+	public static boolean canBlockBeSeen(Entity pEntity, int x, int y, int z, boolean toTop, boolean do1, boolean do2) {
+		// ãƒ–ãƒ­ãƒƒã‚¯ã®å¯è¦–åˆ¤å®š
+		Vec3 vec3d = Vec3.createVectorHelper(pEntity.posX, pEntity.posY + pEntity.getEyeHeight(), pEntity.posZ);
+		Vec3 vec3d1 = Vec3.createVectorHelper(x + 0.5D, y + (toTop ? 0.9D : 0.5D), z + 0.5D);
 
-	/**
-	 * ƒ}ƒ‹ƒ`‘Î‰—pB
-	 * ItemStack‚Éî•ñXV‚ğs‚¤‚ÆAƒT[ƒo[‘¤‚Æ‚Ì·ˆÙ‚©‚çSlot‚ÌƒAƒbƒvƒf[ƒg‚ªs‚í‚ê‚éB
-	 * ‚»‚ÌÛAUsingItem‚ÌXVˆ—‚ªs‚í‚ê‚È‚¢‚½‚ßˆá‚¤ƒAƒCƒeƒ€‚É‘Ö‚¦‚ç‚ê‚½‚Æ”»’è‚³‚ê‚éB
-	 * ‚±‚±‚Å‚Í”äŠr—p‚Ég‚í‚ê‚éƒXƒ^ƒbƒNƒŠƒXƒg‚ğ‹­§“I‚É‘Š·‚¦‚é–‚É‚æ‚è‘Î‰‚µ‚½B
-	 */
-	public static void updateCheckinghSlot(Entity pEntity, ItemStack pItemstack) {
-		if (pEntity instanceof EntityPlayerMP) {
-			// ƒT[ƒo[‘¤‚Å‚Ì‚İˆ—
-			EntityPlayerMP lep = (EntityPlayerMP)pEntity;
-			Container lctr = lep.openContainer;
-			for (int li = 0; li < lctr.inventorySlots.size(); li++) {
-				ItemStack lis = ((Slot)lctr.getSlot(li)).getStack(); 
-				if (lis == pItemstack) {
-					lctr.inventoryItemStacks.set(li, pItemstack.copy());
-					break;
-				}
+		MovingObjectPosition movingobjectposition = pEntity.worldObj.rayTraceBlocks_do_do(vec3d, vec3d1, do1, do2);
+		if (movingobjectposition == null) {
+			return false;
+		}
+		if (movingobjectposition.typeOfHit == EnumMovingObjectType.TILE) {
+			if (movingobjectposition.blockX == MathHelper.floor_double(vec3d1.xCoord) &&
+					movingobjectposition.blockY == MathHelper.floor_double(vec3d1.yCoord) &&
+					movingobjectposition.blockZ == MathHelper.floor_double(vec3d1.zCoord)) {
+				return true;
 			}
 		}
+		return false;
 	}
-	
+
 	/**
-	 * Forge—pƒNƒ‰ƒXŠl“¾B
+	 * æŒ‡å®šã•ã‚ŒãŸãƒªãƒ“ã‚¸ãƒ§ãƒ³ã‚ˆã‚Šã‚‚å¤ã‘ã‚Œã°ä¾‹å¤–ã‚’æŠ•ã’ã¦ã‚¹ãƒˆãƒƒãƒ—
+	 */
+	public static void checkRevision(String pRev) {
+		if (convRevision() < convRevision(pRev)) {
+			// é©åˆãƒãƒ¼ã‚¸ãƒ§ãƒ³ã§ã¯ãªã„ã®ã§ã‚¹ãƒˆãƒƒãƒ—
+			ModLoader.getLogger().warning("you must check MMMLib revision.");
+			throw new RuntimeException("The revision of MMMLib is old.");
+		}
+	}
+
+	public static float convRevision() {
+		return convRevision(mod_MMM_MMMLib.Revision);
+	}
+
+	public static float convRevision(String pRev) {
+		Pattern lp = Pattern.compile("(\\d+)(\\w*)");
+		Matcher lm = lp.matcher(pRev);
+		float lf = 0;
+		if (lm.find()) {
+			lf = Integer.valueOf(lm.group(1));
+			if (!lm.group(2).isEmpty()) {
+				lf += (lm.group(2).charAt(0) - 96) * 0.01;
+			}
+		}
+		return lf;
+	}
+
+	/**
+	 * ãƒ—ãƒ¬ãƒ¼ãƒ¤ã®ã‚¤ãƒ³ãƒ™ãƒ³ãƒˆãƒªã‹ã‚‰ã‚¢ã‚¤ãƒ†ãƒ ã‚’æ¸›ã‚‰ã™
+	 */
+	public static ItemStack decPlayerInventory(EntityPlayer par1EntityPlayer, int par2Index, int par3DecCount) {
+		if (par1EntityPlayer == null) {
+			return null;
+		}
+
+		if (par2Index == -1) {
+			par2Index = par1EntityPlayer.inventory.currentItem;
+		}
+		ItemStack itemstack1 = par1EntityPlayer.inventory.getStackInSlot(par2Index);
+		if (itemstack1 == null) {
+			return null;
+		}
+
+		if (!par1EntityPlayer.capabilities.isCreativeMode) {
+			// ã‚¯ãƒªã‚¨ã‚¤ãƒ†ã‚£ãƒ–ã ã¨æ¸›ã‚‰ãªã„
+			itemstack1.stackSize -= par3DecCount;
+		}
+
+		if (itemstack1.getItem() instanceof ItemPotion) {
+			if (itemstack1.stackSize <= 0) {
+				par1EntityPlayer.inventory.setInventorySlotContents(par1EntityPlayer.inventory.currentItem,
+						new ItemStack(Item.glassBottle, par3DecCount));
+				return null;
+			} else {
+				par1EntityPlayer.inventory.addItemStackToInventory(new ItemStack(Item.glassBottle, par3DecCount));
+			}
+		} else {
+			if (itemstack1.stackSize <= 0) {
+				par1EntityPlayer.inventory.setInventorySlotContents(par2Index, null);
+				return null;
+			}
+		}
+
+		return itemstack1;
+	}
+
+	/**
+	 * å¤‰æ•°ã€Œavatarã€ã‹ã‚‰å€¤ã‚’å–ã‚Šå‡ºã—æˆ»ã‚Šå€¤ã¨ã—ã¦è¿”ã™ã€‚
+	 * avatarãŒå­˜åœ¨ã—ãªã„å ´åˆã¯å…ƒã®å€¤ã‚’è¿”ã™ã€‚
+	 * avatarã¯EntityLivingäº’æ›ã€‚
+	 */
+	public static Entity getAvatarEntity(Entity pEntity) {
+		// littleMaidç”¨ã‚³ãƒ¼ãƒ‰ã“ã“ã‹ã‚‰
+		try {
+			// å°„æ‰‹ã®æƒ…å ±ã‚’EntityLittleMaidAvatarã‹ã‚‰EntityLittleMaidã¸ç½®ãæ›ãˆã‚‹
+			Field field = pEntity.getClass().getField("avatar");
+			pEntity = (EntityLiving) field.get(pEntity);
+		} catch (NoSuchFieldException e) {
+		} catch (Exception e) {
+		}
+		// ã“ã“ã¾ã§
+		return pEntity;
+	}
+
+	/**
+	 * å¤‰æ•°ã€ŒmaidAvatarã€ã‹ã‚‰å€¤ã‚’å–ã‚Šå‡ºã—æˆ»ã‚Šå€¤ã¨ã—ã¦è¿”ã™ã€‚
+	 * maidAvatarãŒå­˜åœ¨ã—ãªã„å ´åˆã¯å…ƒã®å€¤ã‚’è¿”ã™ã€‚
+	 * maidAvatarã¯EntityPlayeräº’æ›ã€‚
+	 */
+	public static Entity getAvatarPlayer(Entity entity) {
+		// ãƒ¡ã‚¤ãƒ‰ã•ã‚“ãƒã‚§ãƒƒã‚¯
+		try {
+			Field field = entity.getClass().getField("maidAvatar");
+			entity = (Entity) field.get(entity);
+		} catch (NoSuchFieldException e) {
+		} catch (Exception e) {
+		}
+		return entity;
+	}
+
+	/**
+	 * Entityã‚’è¿”ã™ã€‚
+	 */
+	public static Entity getEntity(byte[] pData, int pIndex, World pWorld) {
+		return pWorld.getEntityByID(MMM_Helper.getInt(pData, pIndex));
+	}
+
+	public static float getFloat(byte[] pData, int pIndex) {
+		return Float.intBitsToFloat(getInt(pData, pIndex));
+	}
+
+	/**
+	 * Forgeç”¨ã‚¯ãƒ©ã‚¹ç²å¾—ã€‚
 	 */
 	public static Class getForgeClass(BaseMod pMod, String pName) {
 		if (isForge) {
@@ -86,8 +207,13 @@ public class MMM_Helper {
 		return getNameOfClass(pName);
 	}
 
+	public static int getInt(byte[] pData, int pIndex) {
+		return (pData[pIndex + 3] & 0xff) | ((pData[pIndex + 2] & 0xff) << 8) | ((pData[pIndex + 1] & 0xff) << 16)
+				| ((pData[pIndex + 0] & 0xff) << 24);
+	}
+
 	/**
-	 * –¼‘O‚©‚çƒNƒ‰ƒX‚ğŠl“¾‚·‚é
+	 * åå‰ã‹ã‚‰ã‚¯ãƒ©ã‚¹ã‚’ç²å¾—ã™ã‚‹
 	 */
 	public static Class getNameOfClass(String pName) {
 		if (fpackage != null) {
@@ -98,88 +224,166 @@ public class MMM_Helper {
 			lclass = Class.forName(pName);
 		} catch (Exception e) {
 		}
-		
+
 		return lclass;
 	}
 
 	/**
-	 * ‘—M—pƒf[ƒ^‚ÌƒZƒbƒg
+	 * Modloaderç’°å¢ƒä¸‹ã§ç©ºã„ã¦ã„ã‚‹EntityIDã‚’è¿”ã™ã€‚
+	 * æœ‰åŠ¹ãªå€¤ã‚’ç²å¾—ã§ããªã‘ã‚Œã°-1ã‚’è¿”ã™ã€‚
 	 */
-	public static void setValue(byte[] pData, int pIndex, int pVal, int pSize) {
-		for (int li = 0; li < pSize; li++) {
-			pData[pIndex++] = (byte)(pVal & 0xff);
-			pVal = pVal >>> 8;
+	public static int getNextEntityID(boolean isLiving) {
+		if (isLiving) {
+			// ç”Ÿç‰©ç”¨
+			for (int li = 1; li < 256; li++) {
+				if (EntityList.getClassFromID(li) == null) {
+					return li;
+				}
+			}
+		} else {
+			// ç‰©ç”¨
+			for (int li = mod_MMM_MMMLib.startVehicleEntityID; li < mod_MMM_MMMLib.startVehicleEntityID + 2048; li++) {
+				if (EntityList.getClassFromID(li) == null) {
+					return li;
+				}
+			}
 		}
-	}
-	
-	public static void setInt(byte[] pData, int pIndex, int pVal) {
-		pData[pIndex + 3]	= (byte)(pVal & 0xff);
-		pData[pIndex + 2]	= (byte)((pVal >>> 8) & 0xff);
-		pData[pIndex + 1]	= (byte)((pVal >>> 16) & 0xff);
-		pData[pIndex + 0]	= (byte)((pVal >>> 24) & 0xff);
-	}
-	
-	public static int getInt(byte[] pData, int pIndex) {
-		return (pData[pIndex + 3] & 0xff) | ((pData[pIndex + 2] & 0xff) << 8) | ((pData[pIndex + 1] & 0xff) << 16) | ((pData[pIndex + 0] & 0xff) << 24);
-	}
-
-	public static void setFloat(byte[] pData, int pIndex, float pVal) {
-		setInt(pData, pIndex, Float.floatToIntBits(pVal));
-	}
-
-	public static float getFloat(byte[] pData, int pIndex) {
-		return Float.intBitsToFloat(getInt(pData, pIndex));
-	}
-
-	public static void setShort(byte[] pData, int pIndex, int pVal) {
-		pData[pIndex++]	= (byte)(pVal & 0xff);
-		pData[pIndex]	= (byte)((pVal >>> 8) & 0xff);
+		return -1;
 	}
 
 	public static short getShort(byte[] pData, int pIndex) {
-		return (short)((pData[pIndex] & 0xff) | ((pData[pIndex + 1] & 0xff) << 8));
+		return (short) ((pData[pIndex] & 0xff) | ((pData[pIndex + 1] & 0xff) << 8));
+	}
+
+	/**
+	 * Forgeå¯¾ç­–ç”¨ã®ãƒ¡ã‚½ãƒƒãƒ‰
+	 */
+	public static ItemStack getSmeltingResult(ItemStack pItemstack) {
+		if (methGetSmeltingResultForge != null) {
+			try {
+				return (ItemStack) methGetSmeltingResultForge.invoke(FurnaceRecipes.smelting(), pItemstack);
+			} catch (Exception e) {
+			}
+		}
+		return FurnaceRecipes.smelting().getSmeltingResult(pItemstack.itemID);
+	}
+
+	public static String getStr(byte[] pData, int pIndex) {
+		return getStr(pData, pIndex, pData.length - pIndex);
 	}
 
 	public static String getStr(byte[] pData, int pIndex, int pLen) {
 		String ls = new String(pData, pIndex, pLen);
 		return ls;
 	}
-	public static String getStr(byte[] pData, int pIndex) {
-		return getStr(pData, pIndex, pData.length - pIndex);
+
+	/**
+	 * ç¾åœ¨ã®å®Ÿè¡Œç’°å¢ƒãŒãƒ­ãƒ¼ã‚«ãƒ«ã‹ã©ã†ã‹ã‚’åˆ¤å®šã™ã‚‹ã€‚
+	 */
+	public static boolean isLocalPlay() {
+		return isClient && mc.isIntegratedServerRunning();
 	}
 
-	public static void setStr(byte[] pData, int pIndex, String pVal) {
-		byte[] lb = pVal.getBytes();
-		for (int li = pIndex; li < pData.length; li++) {
-			pData[li] = lb[li - pIndex];
+	/**
+	 * ãƒã‚¤ã‚ªãƒ¼ãƒ ã®è¨­å®šEntityã‚’ç½®ãæ›ãˆã‚‰ã‚ŒãŸEntityã¸ç½®ãæ›ãˆã‚‹ã€‚
+	 * åŸºæœ¬çš„ã«MMMLibä»¥å¤–ã‹ã‚‰ã¯å‘¼ã°ã‚Œãªã„ã€‚
+	 */
+	public static void replaceBaiomeSpawn() {
+		// ãƒã‚¤ã‚ªãƒ¼ãƒ ã®ç™ºç”Ÿå‡¦ç†ã‚’ã®ã£ã¨ã‚‹
+		if (replaceEntitys.isEmpty()) {
+			return;
+		}
+		for (BiomeGenBase element : BiomeGenBase.biomeList) {
+			if (element == null) {
+				continue;
+			}
+			List<SpawnListEntry> mobs;
+			Debug("ReplaceBaiomeSpawn:%s", element.biomeName);
+			Debug("[Creature]");
+			replaceCreatureList(element.spawnableCreatureList);
+			Debug("[WaterCreature]");
+			replaceCreatureList(element.spawnableWaterCreatureList);
+			Debug("[CaveCreature]");
+			replaceCreatureList(element.spawnableCaveCreatureList);
+			Debug("[Monster]");
+			replaceCreatureList(element.spawnableMonsterList);
 		}
 	}
 
-	// ó‹µ”»’f—vŠÖ”ŒQ
-	protected static boolean canBlockBeSeen(Entity pEntity, int x, int y, int z, boolean toTop, boolean do1, boolean do2) {
-		// ƒuƒƒbƒN‚Ì‰Â‹”»’è
-		Vec3 vec3d = Vec3.createVectorHelper(pEntity.posX, pEntity.posY + pEntity.getEyeHeight(), pEntity.posZ);
-		Vec3 vec3d1 = Vec3.createVectorHelper((double)x + 0.5D, (double)y + (toTop ? 0.9D : 0.5D), (double)z + 0.5D);
-		
-		MovingObjectPosition movingobjectposition = pEntity.worldObj.rayTraceBlocks_do_do(vec3d, vec3d1, do1, do2);
-		if (movingobjectposition == null) {
-			return false;
+	private static void replaceCreatureList(List<SpawnListEntry> pMobs) {
+		if (pMobs == null) {
+			return;
 		}
-		if (movingobjectposition.typeOfHit == EnumMovingObjectType.TILE) {
-			if (movingobjectposition.blockX == MathHelper.floor_double(vec3d1.xCoord) && 
-				movingobjectposition.blockY == MathHelper.floor_double(vec3d1.yCoord) &&
-				movingobjectposition.blockZ == MathHelper.floor_double(vec3d1.zCoord)) {
-				return true;
+		for (Entry<Class, Class> le : replaceEntitys.entrySet()) {
+			for (int j = 0; j < pMobs.size(); j++) {
+				if (pMobs.get(j).entityClass == le.getKey()) {
+					pMobs.get(j).entityClass = le.getValue();
+					Debug("ReplaceCreatureList: %s -> %s", le.getKey().getSimpleName(), le.getValue().getSimpleName());
+				}
 			}
 		}
-		return false;
+	}
+
+	/**
+	 * EntityListã«ç™»éŒ²ã•ã‚Œã¦ã„ã„ã‚‹Entityã‚’ç½®ãæ›ãˆã‚‹ã€‚
+	 */
+	public static void replaceEntityList(Class pSrcClass, Class pDestClass) {
+		// EntityListç™»éŒ²æƒ…å ±ã‚’ç½®ãæ›ãˆ
+		try {
+			// stringToClassMapping
+			Map lmap;
+			int lint;
+			String ls;
+			lmap = (Map) ModLoader.getPrivateValue(EntityList.class, null, 0);
+			for (Entry<String, Class> le : ((Map<String, Class>) lmap).entrySet()) {
+				if (le.getValue() == pSrcClass) {
+					le.setValue(pDestClass);
+				}
+			}
+			// classToStringMapping
+			lmap = (Map) ModLoader.getPrivateValue(EntityList.class, null, 1);
+			if (lmap.containsKey(pSrcClass)) {
+				ls = (String) lmap.get(pSrcClass);
+				lmap.remove(pSrcClass);
+				lmap.put(pDestClass, ls);
+			}
+			// IDtoClassMapping
+			lmap = (Map) ModLoader.getPrivateValue(EntityList.class, null, 2);
+			for (Entry<Integer, Class> le : ((Map<Integer, Class>) lmap).entrySet()) {
+				if (le.getValue() == pSrcClass) {
+					le.setValue(pDestClass);
+				}
+			}
+			// classToIDMapping
+			lmap = (Map) ModLoader.getPrivateValue(EntityList.class, null, 3);
+			if (lmap.containsKey(pSrcClass)) {
+				lint = (Integer) lmap.get(pSrcClass);
+				lmap.remove(pSrcClass);
+				lmap.put(pDestClass, lint);
+			}
+			replaceEntitys.put(pSrcClass, pDestClass);
+			Debug("Replace %s -> %s", pSrcClass.getSimpleName(), pDestClass.getSimpleName());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void setFloat(byte[] pData, int pIndex, float pVal) {
+		setInt(pData, pIndex, Float.floatToIntBits(pVal));
+	}
+
+	public static void setInt(byte[] pData, int pIndex, int pVal) {
+		pData[pIndex + 3] = (byte) (pVal & 0xff);
+		pData[pIndex + 2] = (byte) ((pVal >>> 8) & 0xff);
+		pData[pIndex + 1] = (byte) ((pVal >>> 16) & 0xff);
+		pData[pIndex + 0] = (byte) ((pVal >>> 24) & 0xff);
 	}
 
 	public static boolean setPathToTile(EntityLiving pEntity, TileEntity pTarget, boolean flag) {
-		// Tile‚Ü‚Å‚ÌƒpƒX‚ğì‚é
+		// Tileã¾ã§ã®ãƒ‘ã‚¹ã‚’ä½œã‚‹
 		PathNavigate lpn = pEntity.getNavigator();
 		float lspeed = 0.3F;
-		// Œü‚«‚É‡‚í‚¹‚Ä‹——£‚ğ’²®
+		// å‘ãã«åˆã‚ã›ã¦è·é›¢ã‚’èª¿æ•´
 		int i = (pTarget.yCoord == MathHelper.floor_double(pEntity.posY) && flag) ? 2 : 1;
 		switch (pEntity.worldObj.getBlockMetadata(pTarget.xCoord, pTarget.yCoord, pTarget.zCoord)) {
 		case 3:
@@ -195,229 +399,47 @@ public class MMM_Helper {
 		}
 	}
 
-	/**
-	 * ModloaderŠÂ‹«‰º‚Å‹ó‚¢‚Ä‚¢‚éEntityID‚ğ•Ô‚·B
-	 * —LŒø‚È’l‚ğŠl“¾‚Å‚«‚È‚¯‚ê‚Î-1‚ğ•Ô‚·B
-	 */
-	public static int getNextEntityID(boolean isLiving) {
-		if (isLiving) {
-			// ¶•¨—p
-			for (int li = 1; li < 256; li++) {
-				if (EntityList.getClassFromID(li) == null) {
-					return li;
-				}
-			}
-		} else {
-			// •¨—p
-			for (int li = mod_MMM_MMMLib.startVehicleEntityID; li < mod_MMM_MMMLib.startVehicleEntityID + 2048; li++) {
-				if (EntityList.getClassFromID(li) == null) {
-					return li;
-				}
-			}
-		}
-		return -1;
+	public static void setShort(byte[] pData, int pIndex, int pVal) {
+		pData[pIndex++] = (byte) (pVal & 0xff);
+		pData[pIndex] = (byte) ((pVal >>> 8) & 0xff);
 	}
 
-	/**
-	 * Entity‚ğ•Ô‚·B
-	 */
-	public static Entity getEntity(byte[] pData, int pIndex, World pWorld) {
-		return pWorld.getEntityByID(MMM_Helper.getInt(pData, pIndex));
-	}
-
-	/**
-	 * •Ï”uavatarv‚©‚ç’l‚ğæ‚èo‚µ–ß‚è’l‚Æ‚µ‚Ä•Ô‚·B
-	 * avatar‚ª‘¶İ‚µ‚È‚¢ê‡‚ÍŒ³‚Ì’l‚ğ•Ô‚·B
-	 * avatar‚ÍEntityLivingŒİŠ·B
-	 */
-	public static Entity getAvatarEntity(Entity pEntity){
-		// littleMaid—pƒR[ƒh‚±‚±‚©‚ç
-		try {
-			// Ëè‚Ìî•ñ‚ğEntityLittleMaidAvatar‚©‚çEntityLittleMaid‚Ö’u‚«Š·‚¦‚é
-			Field field = pEntity.getClass().getField("avatar");
-			pEntity = (EntityLiving)field.get(pEntity);
-		}
-		catch (NoSuchFieldException e) {
-		}
-		catch (Exception e) {
-		}
-		// ‚±‚±‚Ü‚Å
-		return pEntity;
-	}
-
-	/**
-	 * •Ï”umaidAvatarv‚©‚ç’l‚ğæ‚èo‚µ–ß‚è’l‚Æ‚µ‚Ä•Ô‚·B
-	 * maidAvatar‚ª‘¶İ‚µ‚È‚¢ê‡‚ÍŒ³‚Ì’l‚ğ•Ô‚·B
-	 * maidAvatar‚ÍEntityPlayerŒİŠ·B
-	 */
-	public static Entity getAvatarPlayer(Entity entity) {
-		// ƒƒCƒh‚³‚ñƒ`ƒFƒbƒN
-		try {
-			Field field = entity.getClass().getField("maidAvatar");
-			entity = (Entity)field.get(entity);
-		}
-		catch (NoSuchFieldException e) {
-		}
-		catch (Exception e) {
-		}
-		return entity;
-	}
-
-	/**
-	 * ƒvƒŒ[ƒ„‚ÌƒCƒ“ƒxƒ“ƒgƒŠ‚©‚çƒAƒCƒeƒ€‚ğŒ¸‚ç‚·
-	 */
-	protected static ItemStack decPlayerInventory(EntityPlayer par1EntityPlayer, int par2Index, int par3DecCount) {
-		if (par1EntityPlayer == null) {
-			return null;
-		}
-		
-		if (par2Index == -1) {
-			par2Index = par1EntityPlayer.inventory.currentItem;
-		}
-		ItemStack itemstack1 = par1EntityPlayer.inventory.getStackInSlot(par2Index);
-		if (itemstack1 == null) {
-			return null;
-		}
-		
-		if (!par1EntityPlayer.capabilities.isCreativeMode) {
-			// ƒNƒŠƒGƒCƒeƒBƒu‚¾‚ÆŒ¸‚ç‚È‚¢
-			itemstack1.stackSize -= par3DecCount;
-		}
-		
-		if (itemstack1.getItem() instanceof ItemPotion) {
-			if(itemstack1.stackSize <= 0) {
-				par1EntityPlayer.inventory.setInventorySlotContents(par1EntityPlayer.inventory.currentItem, new ItemStack(Item.glassBottle, par3DecCount));
-				return null;
-			} else {
-				par1EntityPlayer.inventory.addItemStackToInventory(new ItemStack(Item.glassBottle, par3DecCount));
-			}
-		} else {
-			if (itemstack1.stackSize <= 0) {
-				par1EntityPlayer.inventory.setInventorySlotContents(par2Index, null);
-				return null;
-			}
-		}
-		
-		return itemstack1;
-	}
-
-	protected static float convRevision(String pRev) {
-		Pattern lp = Pattern.compile("(\\d+)(\\w*)");
-		Matcher lm = lp.matcher(pRev);
-		float lf = 0;
-		if (lm.find()) {
-			lf = Integer.valueOf(lm.group(1));
-			if (!lm.group(2).isEmpty()) {
-				lf += (float)(lm.group(2).charAt(0) - 96) * 0.01;
-			}
-		}
-		return lf;
-	}
-	protected static float convRevision() {
-		return convRevision(mod_MMM_MMMLib.Revision);
-	}
-
-	/**
-	 * w’è‚³‚ê‚½ƒŠƒrƒWƒ‡ƒ“‚æ‚è‚àŒÃ‚¯‚ê‚Î—áŠO‚ğ“Š‚°‚ÄƒXƒgƒbƒv
-	 */
-	public static void checkRevision(String pRev) {
-		if (convRevision() < convRevision(pRev)) {
-			// “K‡ƒo[ƒWƒ‡ƒ“‚Å‚Í‚È‚¢‚Ì‚ÅƒXƒgƒbƒv
-			ModLoader.getLogger().warning("you must check MMMLib revision.");
-			throw new RuntimeException("The revision of MMMLib is old.");
+	public static void setStr(byte[] pData, int pIndex, String pVal) {
+		byte[] lb = pVal.getBytes();
+		for (int li = pIndex; li < pData.length; li++) {
+			pData[li] = lb[li - pIndex];
 		}
 	}
 
 	/**
-	 * Forge‘Îô—p‚Ìƒƒ\ƒbƒh
+	 * é€ä¿¡ç”¨ãƒ‡ãƒ¼ã‚¿ã®ã‚»ãƒƒãƒˆ
 	 */
-	public static ItemStack getSmeltingResult(ItemStack pItemstack) {
-		if (methGetSmeltingResultForge != null) {
-			try {
-				return (ItemStack)methGetSmeltingResultForge.invoke(FurnaceRecipes.smelting(), pItemstack);
-			}catch (Exception e) {
-			}
+	public static void setValue(byte[] pData, int pIndex, int pVal, int pSize) {
+		for (int li = 0; li < pSize; li++) {
+			pData[pIndex++] = (byte) (pVal & 0xff);
+			pVal = pVal >>> 8;
 		}
-		return FurnaceRecipes.smelting().getSmeltingResult(pItemstack.itemID);
 	}
 
 	/**
-	 * EntityList‚É“o˜^‚³‚ê‚Ä‚¢‚¢‚éEntity‚ğ’u‚«Š·‚¦‚éB
+	 * ãƒãƒ«ãƒå¯¾å¿œç”¨ã€‚
+	 * ItemStackã«æƒ…å ±æ›´æ–°ã‚’è¡Œã†ã¨ã€ã‚µãƒ¼ãƒãƒ¼å´ã¨ã®å·®ç•°ã‹ã‚‰Slotã®ã‚¢ãƒƒãƒ—ãƒ‡ãƒ¼ãƒˆãŒè¡Œã‚ã‚Œã‚‹ã€‚
+	 * ãã®éš›ã€UsingItemã®æ›´æ–°å‡¦ç†ãŒè¡Œã‚ã‚Œãªã„ãŸã‚é•ã†ã‚¢ã‚¤ãƒ†ãƒ ã«æŒæ›¿ãˆã‚‰ã‚ŒãŸã¨åˆ¤å®šã•ã‚Œã‚‹ã€‚
+	 * ã“ã“ã§ã¯æ¯”è¼ƒç”¨ã«ä½¿ã‚ã‚Œã‚‹ã‚¹ã‚¿ãƒƒã‚¯ãƒªã‚¹ãƒˆã‚’å¼·åˆ¶çš„ã«æ›¸æ›ãˆã‚‹äº‹ã«ã‚ˆã‚Šå¯¾å¿œã—ãŸã€‚
 	 */
-	public static void replaceEntityList(Class pSrcClass, Class pDestClass) {
-		// EntityList“o˜^î•ñ‚ğ’u‚«Š·‚¦
-		try {
-			// stringToClassMapping
-			Map lmap;
-			int lint;
-			String ls;
-			lmap = (Map)ModLoader.getPrivateValue(EntityList.class, null, 0);
-			for (Entry<String, Class> le : ((Map<String, Class>)lmap).entrySet()) {
-				if (le.getValue() == pSrcClass) {
-					le.setValue(pDestClass);
-				}
-			}
-			// classToStringMapping
-			lmap = (Map)ModLoader.getPrivateValue(EntityList.class, null, 1);
-			if (lmap.containsKey(pSrcClass)) {
-				ls = (String)lmap.get(pSrcClass);
-				lmap.remove(pSrcClass);
-				lmap.put(pDestClass, ls);
-			}
-			// IDtoClassMapping
-			lmap = (Map)ModLoader.getPrivateValue(EntityList.class, null, 2);
-			for (Entry<Integer, Class> le : ((Map<Integer, Class>)lmap).entrySet()) {
-				if (le.getValue() == pSrcClass) {
-					le.setValue(pDestClass);
-				}
-			}
-			// classToIDMapping
-			lmap = (Map)ModLoader.getPrivateValue(EntityList.class, null, 3);
-			if (lmap.containsKey(pSrcClass)) {
-				lint = (Integer)lmap.get(pSrcClass);
-				lmap.remove(pSrcClass);
-				lmap.put(pDestClass, lint);
-			}
-			replaceEntitys.put(pSrcClass, pDestClass);
-			Debug("Replace %s -> %s", pSrcClass.getSimpleName(), pDestClass.getSimpleName());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	private static void replaceCreatureList(List<SpawnListEntry> pMobs) {
-		if (pMobs == null) return;
-		for (Entry<Class, Class> le : replaceEntitys.entrySet()) {
-			for (int j = 0; j < pMobs.size(); j++) {
-				if (pMobs.get(j).entityClass == le.getKey()) {
-					pMobs.get(j).entityClass = le.getValue();
-					Debug("ReplaceCreatureList: %s -> %s", le.getKey().getSimpleName(), le.getValue().getSimpleName());
+	public static void updateCheckinghSlot(Entity pEntity, ItemStack pItemstack) {
+		if (pEntity instanceof EntityPlayerMP) {
+			// ã‚µãƒ¼ãƒãƒ¼å´ã§ã®ã¿å‡¦ç†
+			EntityPlayerMP lep = (EntityPlayerMP) pEntity;
+			Container lctr = lep.openContainer;
+			for (int li = 0; li < lctr.inventorySlots.size(); li++) {
+				ItemStack lis = lctr.getSlot(li).getStack();
+				if (lis == pItemstack) {
+					lctr.inventoryItemStacks.set(li, pItemstack.copy());
+					break;
 				}
 			}
 		}
 	}
 
-	/**
-	 * ƒoƒCƒI[ƒ€‚Ìİ’èEntity‚ğ’u‚«Š·‚¦‚ç‚ê‚½Entity‚Ö’u‚«Š·‚¦‚éB
-	 * Šî–{“I‚ÉMMMLibˆÈŠO‚©‚ç‚ÍŒÄ‚Î‚ê‚È‚¢B
-	 */
-	protected static void replaceBaiomeSpawn() {
-		// ƒoƒCƒI[ƒ€‚Ì”­¶ˆ—‚ğ‚Ì‚Á‚Æ‚é
-		if (replaceEntitys.isEmpty()) return;
-		for (int i = 0; i < BiomeGenBase.biomeList.length; i++) {
-			if (BiomeGenBase.biomeList[i] == null) continue;
-			List<SpawnListEntry> mobs;
-			Debug("ReplaceBaiomeSpawn:%s", BiomeGenBase.biomeList[i].biomeName);
-			Debug("[Creature]");
-			replaceCreatureList(BiomeGenBase.biomeList[i].spawnableCreatureList);
-			Debug("[WaterCreature]");
-			replaceCreatureList(BiomeGenBase.biomeList[i].spawnableWaterCreatureList);
-			Debug("[CaveCreature]");
-			replaceCreatureList(BiomeGenBase.biomeList[i].spawnableCaveCreatureList);
-			Debug("[Monster]");
-			replaceCreatureList(BiomeGenBase.biomeList[i].spawnableMonsterList);
-		}
-	}
-
-	
 }

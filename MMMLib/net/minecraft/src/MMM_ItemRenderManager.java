@@ -6,14 +6,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.minecraft.client.Minecraft;
-
-import org.lwjgl.opengl.GL11;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 
 public class MMM_ItemRenderManager {
 
-	protected static Map<Object, MMM_ItemRenderManager> classList = new HashMap<Object, MMM_ItemRenderManager>();
-	protected static List<Object> checkList = new ArrayList<Object>();
+	public static Map<Object, MMM_ItemRenderManager> classList = new HashMap<Object, MMM_ItemRenderManager>();
+	public static List<Object> checkList = new ArrayList<Object>();
 	
 	private Object fobject;
 	private Method frenderItem;
@@ -39,7 +39,7 @@ public class MMM_ItemRenderManager {
 	}
 
 	public static boolean setEXRender(Item pItem, MMM_IItemRenderManager pEXRender) {
-		// ƒAƒCƒeƒ€‚Ì“ÁŽê•`‰æ‹@”\‚ð‹­§“I‚É’Ç‰Á‚·‚é
+		// ã‚¢ã‚¤ãƒ†ãƒ ã®ç‰¹æ®Šæç”»æ©Ÿèƒ½ã‚’å¼·åˆ¶çš„ã«è¿½åŠ ã™ã‚‹
 		if (pItem == null || pEXRender == null) return false;
 		
 		checkList.add(pItem);

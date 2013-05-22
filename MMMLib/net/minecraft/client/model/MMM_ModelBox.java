@@ -1,4 +1,5 @@
-package net.minecraft.src;
+package net.minecraft.client.model;
+
 
 public class MMM_ModelBox extends MMM_ModelBoxBase {
 

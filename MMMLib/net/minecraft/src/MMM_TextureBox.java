@@ -4,10 +4,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
+import net.minecraft.client.model.MMM_ModelMultiBase;
+import net.minecraft.item.ItemArmor;
+import net.minecraft.item.ItemStack;
+
 public class MMM_TextureBox {
 
 	/**
-	 * ƒeƒNƒXƒ`ƒƒƒpƒbƒN‚Ì–¼Ì
+	 * ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ‘ãƒƒã‚¯ã®åç§°
 	 */
 	public String packegeName;
 	public Map<Integer, String> textures;
@@ -19,9 +23,9 @@ public class MMM_TextureBox {
 	 */
 	public String[] textureDir;
 	
-	protected float modelHeight;
-	protected float modelWidth;
-	protected float modelYOffset;
+	public float modelHeight;
+	public float modelWidth;
+	public float modelYOffset;
 
 
 
@@ -48,8 +52,8 @@ public class MMM_TextureBox {
 	}
 
 	/**
-	 * ƒeƒNƒXƒ`ƒƒ‚Ìƒtƒ‹ƒpƒX‚ğ•Ô‚·B
-	 * “o˜^ƒCƒ“ƒfƒbƒNƒX‚ª–³‚¢ê‡‚ÍNULL‚ğ•Ô‚·B
+	 * ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ãƒ•ãƒ«ãƒ‘ã‚¹ã‚’è¿”ã™ã€‚
+	 * ç™»éŒ²ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãŒç„¡ã„å ´åˆã¯NULLã‚’è¿”ã™ã€‚
 	 */
 	public String getTextureName(int pIndex) {
 		if (textures.containsKey(pIndex)) {
@@ -61,7 +65,7 @@ public class MMM_TextureBox {
 	}
 
 	public String getArmorTextureName(int index, ItemStack itemstack) {
-		// index‚Í0x40,0x50”Ô‘ä
+		// indexã¯0x40,0x50ç•ªå°
 		if (armors.isEmpty() || itemstack == null) return null;
 		if (!(itemstack.getItem() instanceof ItemArmor)) return null;
 		
@@ -87,7 +91,7 @@ public class MMM_TextureBox {
 	}
 
 	/**
-	 * Œ_–ñF‚Ì—L–³‚ğƒrƒbƒg”z—ñ‚É‚µ‚Ä•Ô‚·
+	 * å¥‘ç´„è‰²ã®æœ‰ç„¡ã‚’ãƒ“ãƒƒãƒˆé…åˆ—ã«ã—ã¦è¿”ã™
 	 */
 	public int getContractColorBits() {
 		int li = 0;
@@ -99,7 +103,7 @@ public class MMM_TextureBox {
 		return li;
 	}
 	/**
-	 * –ì¶F‚Ì—L–³‚ğƒrƒbƒg”z—ñ‚É‚µ‚Ä•Ô‚·
+	 * é‡ç”Ÿè‰²ã®æœ‰ç„¡ã‚’ãƒ“ãƒƒãƒˆé…åˆ—ã«ã—ã¦è¿”ã™
 	 */
 	public int getWildColorBits() {
 		int li = 0;

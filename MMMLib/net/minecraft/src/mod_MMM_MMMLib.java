@@ -4,27 +4,59 @@ import java.util.Iterator;
 import java.util.Map;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.NetClientHandler;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.MMM_EntityDummy;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.network.NetServerHandler;
+import net.minecraft.network.packet.Packet250CustomPayload;
 
 public class mod_MMM_MMMLib extends BaseMod {
 
-	public static final String Revision = "2";
-	
-	@MLProp()
-	public static boolean isDebugView = false;
 	@MLProp()
 	public static boolean isDebugMessage = true;
+
+	@MLProp()
+	public static boolean isDebugView = false;
 	@MLProp(info = "Override RenderItem.")
 	public static boolean renderHacking = true;
+	public static final String Revision = "2";
 	@MLProp(info = "starting auto assigned ID.")
 	public static int startVehicleEntityID = 2176;
 
-
-
 	public static void Debug(String pText, Object... pVals) {
-		// ƒfƒoƒbƒOƒƒbƒZ[ƒW
+		// ãƒ‡ãƒãƒƒã‚°ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
 		if (isDebugMessage) {
 			System.out.println(String.format("MMMLib-" + pText, pVals));
 		}
+	}
+
+	public static void sendToClient(NetServerHandler pHandler, byte[] pData) {
+		ModLoader.serverSendPacket(pHandler, new Packet250CustomPayload("MMM|Upd", pData));
+	}
+
+	@Override
+	public void addRenderer(Map var1) {
+		if (isDebugView) {
+			var1.put(MMM_EntityDummy.class, new MMM_RenderDummy());
+		}
+		//RenderItem
+		var1.put(EntityItem.class, new MMM_RenderItem());
+	}
+
+	@Override
+	public void clientConnect(NetClientHandler var1) {
+		MMM_Client.clientConnect(var1);
+	}
+
+	@Override
+	public void clientCustomPayload(NetClientHandler var1, Packet250CustomPayload var2) {
+		MMM_Client.clientCustomPayload(var1, var2);
+	}
+
+	@Override
+	public void clientDisconnect(NetClientHandler var1) {
+		MMM_Client.clientDisconnect(var1);
 	}
 
 	@Override
@@ -33,18 +65,18 @@ public class mod_MMM_MMMLib extends BaseMod {
 	}
 
 	@Override
-	public String getVersion() {
-		return "1.5.2-" + Revision;
-	}
-	
-	@Override
 	public String getPriorities() {
 		return MMM_Helper.isForge ? "befor-all" : "before:*";
 	}
 
 	@Override
+	public String getVersion() {
+		return "1.5.2-" + Revision;
+	}
+
+	@Override
 	public void load() {
-		// ‰Šú‰»
+		// åˆæœŸåŒ–
 		Debug(MMM_Helper.isClient ? "Client" : "Server");
 		Debug(MMM_Helper.isForge ? "Forge" : "Modloader");
 		MMM_FileManager.init();
@@ -54,44 +86,35 @@ public class mod_MMM_MMMLib extends BaseMod {
 		if (isDebugView) {
 			MMM_EntityDummy.isEnable = true;
 		}
-		
-		// “Æ©ƒpƒPƒbƒg—pƒ`ƒƒƒ“ƒlƒ‹
+
+		// ç‹¬è‡ªãƒ‘ã‚±ãƒƒãƒˆç”¨ãƒãƒ£ãƒ³ãƒãƒ«
 		ModLoader.registerPacketChannel(this, "MMM|Upd");
 	}
 
 	@Override
 	public void modsLoaded() {
-		// ƒoƒCƒI[ƒ€‚Éİ’è‚³‚ê‚½ƒXƒ|[ƒ“î•ñ‚ğ’u‚«Š·‚¦B
+		// ãƒã‚¤ã‚ªãƒ¼ãƒ ã«è¨­å®šã•ã‚ŒãŸã‚¹ãƒãƒ¼ãƒ³æƒ…å ±ã‚’ç½®ãæ›ãˆã€‚
 		MMM_Helper.replaceBaiomeSpawn();
-		
-		// ƒ[ƒh
+
+		// ãƒ­ãƒ¼ãƒ‰
 		if (MMM_Helper.isClient) {
-			// ƒeƒNƒXƒ`ƒƒƒpƒbƒN‚Ì\’z
+			// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ‘ãƒƒã‚¯ã®æ§‹ç¯‰
 			MMM_TextureManager.loadTextures();
 			MMM_StabilizerManager.loadStabilizer();
 			MMM_Client.setArmorPrefix();
 		} else {
 			MMM_TextureManager.loadTextureIndex();
 		}
-		
-		// ƒeƒNƒXƒ`ƒƒƒCƒ“ƒfƒbƒNƒX‚Ì\’z
+
+		// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã®æ§‹ç¯‰
 		Debug("Localmode: InitTextureList.");
 		MMM_TextureManager.initTextureList(true);
 	}
 
 	@Override
-	public void addRenderer(Map var1) {
-		if (isDebugView) {
-			var1.put(net.minecraft.src.MMM_EntityDummy.class, new MMM_RenderDummy());
-		}
-		//RenderItem
-		var1.put(EntityItem.class, new MMM_RenderItem());
-	}
-
-	@Override
 	public boolean onTickInGame(float var1, Minecraft var2) {
 		if (isDebugView && MMM_Helper.isClient) {
-			// ƒ_ƒ~[ƒ}[ƒJ[‚Ì•\¦—pˆ—
+			// ãƒ€ãƒŸãƒ¼ãƒãƒ¼ã‚«ãƒ¼ã®è¡¨ç¤ºç”¨å‡¦ç†
 			if (var2.theWorld != null && var2.thePlayer != null) {
 				try {
 					for (Iterator<MMM_EntityDummy> li = MMM_EntityDummy.appendList.iterator(); li.hasNext();) {
@@ -99,69 +122,53 @@ public class mod_MMM_MMMLib extends BaseMod {
 						li.remove();
 					}
 				} catch (Exception e) {
-//					e.printStackTrace();
+					//					e.printStackTrace();
 				}
 			}
 		}
-		
-		// ƒAƒCƒeƒ€ƒŒƒ“ƒ_[‚ğƒI[ƒo[ƒ‰ƒCƒh
+
+		// ã‚¢ã‚¤ãƒ†ãƒ ãƒ¬ãƒ³ãƒ€ãƒ¼ã‚’ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 		if (renderHacking && MMM_Helper.isClient) {
 			MMM_Client.setItemRenderer();
 		}
-		
+
 		return true;
 	}
 
 	@Override
 	public void serverCustomPayload(NetServerHandler var1, Packet250CustomPayload var2) {
-		// ƒT[ƒo‘¤‚Ì“®ì
+		// ã‚µãƒ¼ãƒå´ã®å‹•ä½œ
 		byte lmode = var2.data[0];
 		int leid = 0;
 		Entity lentity = null;
 		if ((lmode & 0x80) != 0) {
 			leid = MMM_Helper.getInt(var2.data, 1);
 			lentity = MMM_Helper.getEntity(var2.data, 1, var1.playerEntity.worldObj);
-			if (lentity == null) return;
+			if (lentity == null) {
+				return;
+			}
 		}
 		Debug("MMM|Upd Srv Call[%2x:%d].", lmode, leid);
 		byte[] ldata;
-		
+
 		switch (lmode) {
 		case MMM_Statics.Server_SetTexturePackIndex:
-			// ƒT[ƒo[‘¤‚ÌEntity‚É‘Î‚µ‚ÄƒeƒNƒXƒ`ƒƒƒCƒ“ƒfƒbƒNƒX‚ğİ’è‚·‚é
+			// ã‚µãƒ¼ãƒãƒ¼å´ã®Entityã«å¯¾ã—ã¦ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’è¨­å®šã™ã‚‹
 			MMM_TextureManager.reciveFromClientSetTexturePackIndex(lentity, var2.data);
 			break;
 		case MMM_Statics.Server_GetTextureIndex:
-			// ƒT[ƒo[‘¤‚Å‚ÌŠÇ—”Ô†‚Ì–â‚¢‡‚í‚¹‚É‘Î‚µ‚Ä‰“š‚·‚é
+			// ã‚µãƒ¼ãƒãƒ¼å´ã§ã®ç®¡ç†ç•ªå·ã®å•ã„åˆã‚ã›ã«å¯¾ã—ã¦å¿œç­”ã™ã‚‹
 			MMM_TextureManager.reciveFromClientGetTexturePackIndex(var1, var2.data);
 			break;
 		case MMM_Statics.Server_GetTexturePackName:
-			// ŠÇ—”Ô†‚É‘Î‰‚·‚éƒeƒNƒXƒ`ƒƒƒpƒbƒN–¼‚ğ•Ô‚·B
+			// ç®¡ç†ç•ªå·ã«å¯¾å¿œã™ã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ‘ãƒƒã‚¯åã‚’è¿”ã™ã€‚
 			MMM_TextureManager.reciveFromClientGetTexturePackName(var1, var2.data);
 			break;
 		}
 	}
 
-	public static void sendToClient(NetServerHandler pHandler, byte[] pData) {
-		ModLoader.serverSendPacket(pHandler, new Packet250CustomPayload("MMM|Upd", pData));
-	}
-
-	@Override
-	public void clientCustomPayload(NetClientHandler var1, Packet250CustomPayload var2) {
-		MMM_Client.clientCustomPayload(var1, var2);
-	}
-
-	@Override
-	public void clientConnect(NetClientHandler var1) {
-		MMM_Client.clientConnect(var1);
-	}
-
-	@Override
-	public void clientDisconnect(NetClientHandler var1) {
-		MMM_Client.clientDisconnect(var1);
-	}
-
 	// Forge
+	@Override
 	public void serverDisconnect() {
 		MMM_TextureManager.saveTextureIndex();
 	}

@@ -4,10 +4,8 @@ import java.io.File;
 import java.net.JarURLConnection;
 import java.net.URI;
 import java.net.URL;
-import java.net.URLConnection;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
-import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -18,8 +16,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.server.MinecraftServer;
 
 /**
- * modsƒfƒBƒŒƒNƒgƒŠ‚ÌŠl“¾‚Æminecraft–{‘Ì‚Ìjar‚ğŠl“¾‚µA
- * ‚»‚±‚ÉŠÜ‚Ü‚ê‚éw’è‚³‚ê‚½•¶š—ñ‚ğŠÜ‚Şzip‚ª‚ ‚é‚©‚Ç‚¤‚©‚ğ”»’è‚·‚éB
+ * modsãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã®ç²å¾—ã¨minecraftæœ¬ä½“ã®jarã‚’ç²å¾—ã—ã€
+ * ãã“ã«å«ã¾ã‚Œã‚‹æŒ‡å®šã•ã‚ŒãŸæ–‡å­—åˆ—ã‚’å«ã‚€zipãŒã‚ã‚‹ã‹ã©ã†ã‹ã‚’åˆ¤å®šã™ã‚‹ã€‚
  *
  */
 public class MMM_FileManager {
@@ -27,63 +25,24 @@ public class MMM_FileManager {
 	public static File minecraftJar;
 	public static Map<String, List<File>> fileList = new TreeMap<String, List<File>>();
 	public static File minecraftDir;
-	
-	public static void init() {
-		// ‰Šú‰»
-		if (MMM_Helper.isClient) {
-			minecraftDir = MMM_Helper.mc.getMinecraftDir();
-		} else {
-			minecraftDir = MinecraftServer.getServer().getFile("");
-		}
-		
-		
-		// mincraft.jar‚ğæ“¾
-		// ŠJ”­’†—p‚ÌJar“à‚ÉŠÜ‚Ü‚ê‚Ä‚¢‚é‚±‚Æ‚Ì‘Îô
-		try {
-			ProtectionDomain ls1 = BaseMod.class.getProtectionDomain();
-			CodeSource ls2 = ls1.getCodeSource();
-			URL ls3 = ls2.getLocation();
-			URI ls4 = ls3.toURI();
-			minecraftJar = new File(ls4);
-//			minecraftJar = new File(BaseMod.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-//			mod_MMM_MMMLib.Debug(String.format("getMincraftFile-file:%s", minecraftJar.getName()));
-			mod_MMM_MMMLib.Debug("getMinecraftFile-file:%s", minecraftJar.getAbsolutePath());
-		} catch (Exception exception) {
-			mod_MMM_MMMLib.Debug("getMinecraftFile-Exception.");
-		}
-		if (minecraftJar == null) {
-			try {
-				ClassLoader lcl1 = BaseMod.class.getClassLoader();
-				String lcls1 = BaseMod.class.getName().concat(".class");
-				URL lclu1 = lcl1.getResource(lcls1);
-				JarURLConnection lclc1 = (JarURLConnection)lclu1.openConnection();
-				JarFile lclj1 = lclc1.getJarFile();
-				minecraftJar = new File(lclj1.getName());
-				mod_MMM_MMMLib.Debug("getMinecraftFile-file:%s", lclj1.getName());
-			} catch (Exception exception) {
-				mod_MMM_MMMLib.Debug("getMinecraftFile-Exception.");
-			}
-		}
-		if (minecraftJar == null) {
-			String ls = System.getProperty("java.class.path");
-			int li = ls.indexOf(';');
-			if (li > -1) {
-				ls = ls.substring(0, li);
-			}
-			minecraftJar = new File(ls);
-			mod_MMM_MMMLib.Debug("getMinecraftFile-file:%s", ls);
-		}
-		
+
+	/**
+	 * æ¤œç´¢æ¸ˆã¿ã®ãƒªã‚¹ãƒˆã«å«ã¾ã‚Œã‚‹åˆ—æŒ™ãƒ•ã‚¡ã‚¤ãƒ«ã‚’è¿”ã™ã€‚
+	 * @param pname æ¤œç´¢ãƒªã‚¹ãƒˆåã€‚
+	 * @return åˆ—æŒ™ã•ã‚ŒãŸãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒªã‚¹ãƒˆã€‚
+	 */
+	public static List<File> getFileList(String pname) {
+		return fileList.get(pname);
 	}
 
 	/**
-	 * MODƒfƒBƒŒƒNƒgƒŠ‚ÉŠÜ‚Ü‚ê‚é‘ÎÛƒtƒ@ƒCƒ‹‚ÌƒIƒuƒWƒFƒNƒg‚ğæ“¾B
-	 * @param pname ŒŸõƒŠƒXƒg–¼ÌAgetFileList()‚Åg‚¤B
-	 * @param pprefix ‚±‚Ì•¶š—ñ‚ÌŠÜ‚Ü‚ê‚éƒtƒ@ƒCƒ‹‚ğ—ñ‹“‚·‚éB
-	 * @return —ñ‹“‚³‚ê‚½ƒtƒ@ƒCƒ‹‚ÌƒŠƒXƒgB
+	 * MODãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã«å«ã¾ã‚Œã‚‹å¯¾è±¡ãƒ•ã‚¡ã‚¤ãƒ«ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å–å¾—ã€‚
+	 * @param pname æ¤œç´¢ãƒªã‚¹ãƒˆåç§°ã€getFileList()ã§ä½¿ã†ã€‚
+	 * @param pprefix ã“ã®æ–‡å­—åˆ—ã®å«ã¾ã‚Œã‚‹ãƒ•ã‚¡ã‚¤ãƒ«ã‚’åˆ—æŒ™ã™ã‚‹ã€‚
+	 * @return åˆ—æŒ™ã•ã‚ŒãŸãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒªã‚¹ãƒˆã€‚
 	 */
 	public static List<File> getModFile(String pname, String pprefix) {
-		// ŒŸõÏ‚İ‚©‚Ç‚¤‚©‚Ì”»’è
+		// æ¤œç´¢æ¸ˆã¿ã‹ã©ã†ã‹ã®åˆ¤å®š
 		List<File> llist;
 		if (fileList.containsKey(pname)) {
 			llist = fileList.get(pname);
@@ -91,17 +50,17 @@ public class MMM_FileManager {
 			llist = new ArrayList<File>();
 			fileList.put(pname, llist);
 		}
-		
-		// modsƒfƒBƒŒƒNƒgƒŠ‚ÌŠl“¾
+
+		// modsãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã®ç²å¾—
 		File lmod;
 		if (MMM_Helper.isClient) {
-			lmod = new File(MMM_Helper.mc.getMinecraftDir(), "/mods/");
+			lmod = new File(Minecraft.getMinecraftDir(), "/mods/");
 		} else {
 			lmod = MinecraftServer.getServer().getFile("mods/");
 		}
-		
+
 		mod_MMM_MMMLib.Debug("getModFile:[%s]:%s", pname, lmod.getAbsolutePath());
-		// ƒtƒ@ƒCƒ‹EƒfƒBƒŒƒNƒgƒŠ‚ğŒŸõ
+		// ãƒ•ã‚¡ã‚¤ãƒ«ãƒ»ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚’æ¤œç´¢
 		try {
 			if (lmod.isDirectory()) {
 				mod_MMM_MMMLib.Debug("getModFile-get:%d.", lmod.list().length);
@@ -118,25 +77,67 @@ public class MMM_FileManager {
 				}
 				mod_MMM_MMMLib.Debug("getModFile-files:%d", llist.size());
 			} else {
-				// ‚Ü‚¸‚ ‚è‚¦‚È‚¢
+				// ã¾ãšã‚ã‚Šãˆãªã„
 				mod_MMM_MMMLib.Debug("getModFile-fail.");
 			}
 			return llist;
-		}
-		catch (Exception exception) {
+		} catch (Exception exception) {
 			mod_MMM_MMMLib.Debug("getModFile-Exception.");
 			return null;
 		}
 	}
 
-	/**
-	 * ŒŸõÏ‚İ‚ÌƒŠƒXƒg‚ÉŠÜ‚Ü‚ê‚é—ñ‹“ƒtƒ@ƒCƒ‹‚ğ•Ô‚·B
-	 * @param pname ŒŸõƒŠƒXƒg–¼B
-	 * @return —ñ‹“‚³‚ê‚½ƒtƒ@ƒCƒ‹‚ÌƒŠƒXƒgB
-	 */
-	public static List<File> getFileList(String pname) {
-		return fileList.get(pname);
-	}
+	public static void init() {
+		// åˆæœŸåŒ–
+		if (MMM_Helper.isClient) {
+			minecraftDir = Minecraft.getMinecraftDir();
+		} else {
+			minecraftDir = MinecraftServer.getServer().getFile("");
+		}
 
+		// mincraft.jarã‚’å–å¾—
+		// é–‹ç™ºä¸­ç”¨ã®Jarå†…ã«å«ã¾ã‚Œã¦ã„ã‚‹ã“ã¨ã®å¯¾ç­–
+		if (minecraftJar == null) {
+			try {
+				ClassLoader lcl1 = BaseMod.class.getClassLoader();
+				String lcls1 = BaseMod.class.getName().concat(".class");
+				URL lclu1 = lcl1.getResource(lcls1);
+				JarURLConnection lclc1 = (JarURLConnection) lclu1.openConnection();
+				JarFile lclj1 = lclc1.getJarFile();
+				minecraftJar = new File(lclj1.getName());
+				mod_MMM_MMMLib.Debug("getMinecraftFile-file:%s", lclj1.getName());
+			} catch (Exception exception) {
+				mod_MMM_MMMLib.Debug("getMinecraftFile-Exception.");
+			}
+		}
+		if (minecraftJar == null) {
+			try {
+				ProtectionDomain ls1 = BaseMod.class.getProtectionDomain();
+				CodeSource ls2 = ls1.getCodeSource();
+				URL ls3 = ls2.getLocation();
+				URI ls4 = ls3.toURI();
+				minecraftJar = new File(ls4);
+				if (!minecraftJar.exists()) {
+					minecraftJar = null;
+				} else {
+					mod_MMM_MMMLib.Debug("getMinecraftFile-file:%s", minecraftJar.getAbsolutePath());
+				}
+				//			minecraftJar = new File(BaseMod.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+				//			mod_MMM_MMMLib.Debug(String.format("getMincraftFile-file:%s", minecraftJar.getName()));
+			} catch (Exception exception) {
+				mod_MMM_MMMLib.Debug("getMinecraftFile-Exception.");
+			}
+		}
+		if (minecraftJar == null) {
+			String ls = System.getProperty("java.class.path");
+			int li = ls.indexOf(';');
+			if (li > -1) {
+				ls = ls.substring(0, li);
+			}
+			minecraftJar = new File(ls);
+			mod_MMM_MMMLib.Debug("getMinecraftFile-file:%s", ls);
+		}
+
+	}
 
 }

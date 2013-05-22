@@ -2,8 +2,13 @@ package net.minecraft.src;
 
 import java.util.Map;
 
+import net.minecraft.client.model.MMM_ModelRenderer;
+import net.minecraft.client.model.MMM_ModelStabilizerBase;
+import net.minecraft.client.model.ModelBase;
+import net.minecraft.client.model.ModelRenderer;
+
 /**
- * ‘•”õ•i—p‚ÌƒNƒ‰ƒXB
+ * è£…å‚™å“ç”¨ã®ã‚¯ãƒ©ã‚¹ã€‚
  *
  */
 public class MMM_EquippedStabilizer {
@@ -20,7 +25,7 @@ public class MMM_EquippedStabilizer {
 	}
 */	
 	public boolean updateEquippedPoint(ModelBase pmodel) {
-		// æ‚è•t‚¯ˆÊ’u‚ğƒAƒbƒvƒf[ƒg
+		// å–ã‚Šä»˜ã‘ä½ç½®ã‚’ã‚¢ãƒƒãƒ—ãƒ‡ãƒ¼ãƒˆ
 		for (int li = 0; li < pmodel.boxList.size(); li++) {
     		ModelRenderer lmr = (ModelRenderer)pmodel.boxList.get(li);
     		if (lmr instanceof MMM_ModelRenderer) {

@@ -1,6 +1,7 @@
 package net.minecraft.src;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiButton;
 
 import org.lwjgl.opengl.GL11;
 
@@ -27,11 +28,11 @@ public class MMM_GuiSlider extends GuiButton {
 		sliderOffset = o;
 	}
 
-	protected int getHoverState(boolean flag) {
+	public int getHoverState(boolean flag) {
 		return 0;
 	}
 
-	protected void mouseDragged(Minecraft minecraft, int i, int j) {
+	public void mouseDragged(Minecraft minecraft, int i, int j) {
 		if (!drawButton) {
 			return;
 		}

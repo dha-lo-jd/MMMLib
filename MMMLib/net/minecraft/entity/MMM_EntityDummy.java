@@ -1,22 +1,28 @@
-package net.minecraft.src;
+package net.minecraft.entity;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.client.multiplayer.WorldClient;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.src.MMM_Helper;
+import net.minecraft.src.mod_MMM_MMMLib;
+import net.minecraft.world.World;
+
 /**
- * ƒ}[ƒJ[‚ğ•\¦‚µ‚Ü‚·B
+ * ãƒãƒ¼ã‚«ãƒ¼ã‚’è¡¨ç¤ºã—ã¾ã™ã€‚
  */
 public class MMM_EntityDummy extends Entity {
-	
+
 	private int livecount;
 	private final int maxlivecount = 16;
 	private int entityColor;
 	public Entity entityOwner;
 	/**
-	 * —LŒø”»’è
+	 * æœ‰åŠ¹åˆ¤å®š
 	 */
 	public static boolean isEnable = false;
-	
+
 	public static List<MMM_EntityDummy> appendList = new ArrayList<MMM_EntityDummy>();
 
 
@@ -27,23 +33,23 @@ public class MMM_EntityDummy extends Entity {
 //		setSize(1F, 1F);
 		entityOwner = owner;
 	}
-	
+
 	@Override
-	protected void entityInit() {
+	public void entityInit() {
 	}
 
 	@Override
-	protected void readEntityFromNBT(NBTTagCompound nbttagcompound) {
+	public void readEntityFromNBT(NBTTagCompound nbttagcompound) {
 	}
 
 	@Override
-	protected void writeEntityToNBT(NBTTagCompound nbttagcompound) {
+	public void writeEntityToNBT(NBTTagCompound nbttagcompound) {
 	}
 
 	@Override
 	public void onUpdate() {
 //		super.onUpdate();
-		
+
 		if (--livecount < 0 || !isEnable) {
 			setDead();
 		}
@@ -70,11 +76,11 @@ public class MMM_EntityDummy extends Entity {
 	}
 
 	/**
-	 * w’è‚³‚ê‚½ƒI[ƒi[‚É‘Î‰‚·‚éƒ}[ƒJ[‚ğíœ‚µ‚Ü‚·B
+	 * æŒ‡å®šã•ã‚ŒãŸã‚ªãƒ¼ãƒŠãƒ¼ã«å¯¾å¿œã™ã‚‹ãƒãƒ¼ã‚«ãƒ¼ã‚’å‰Šé™¤ã—ã¾ã™ã€‚
 	 */
 	public static void clearDummyEntity(Entity entity) {
 		if (!isEnable) return;
-		
+
 		List<Entity> liste = entity.worldObj.getLoadedEntityList();
 		for (Entity entity1 : liste) {
 			if (entity1 instanceof MMM_EntityDummy) {
@@ -84,16 +90,16 @@ public class MMM_EntityDummy extends Entity {
 	}
 
 	/**
-	 * ƒ}[ƒJ[‚ğ•\¦‚·‚é
+	 * ãƒãƒ¼ã‚«ãƒ¼ã‚’è¡¨ç¤ºã™ã‚‹
 	 */
 	public static void setDummyEntity(Entity owner, int color, double posx, double posy, double posz) {
 		if (!isEnable) return;
-		
-		// ƒT[ƒo[‘¤‚Å‚µ‚©ŒÄ‚Î‚ê‚È‚¢‚Á‚Û‚¢
+
+		// ã‚µãƒ¼ãƒãƒ¼å´ã§ã—ã‹å‘¼ã°ã‚Œãªã„ã£ã½ã„
 		if (owner.worldObj.isRemote) {
 			mod_MMM_MMMLib.Debug("L");
 		}
-		
+
 		WorldClient lworld = MMM_Helper.mc.theWorld;
 		MMM_EntityDummy ed = new MMM_EntityDummy(lworld, color, owner);
 		ed.setPosition(posx, posy, posz);
