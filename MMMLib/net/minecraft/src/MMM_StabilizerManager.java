@@ -4,9 +4,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
-import net.minecraft.client.model.MMM_ModelStabilizerBase;
-import net.minecraft.client.model.ModelBase;
-
 /**
  * 追加パーツたるスタビライザーを管理する
  */
@@ -43,7 +40,7 @@ public class MMM_StabilizerManager extends MMM_ManagerBase<MMM_ModelStabilizerBa
 	/**
 	 * 実装場所のアップデート
 	 */
-	public static void updateEquippedPoint(Map<String, MMM_EquippedStabilizer> pMap, ModelBase pModel) {
+	public static void updateEquippedPoint(Map<String, MMM_EquippedStabilizer> pMap, MMM_ModelBase pModel) {
 		for (Entry<String, MMM_EquippedStabilizer> le : pMap.entrySet()) {
 			le.getValue().updateEquippedPoint(pModel);
 		}

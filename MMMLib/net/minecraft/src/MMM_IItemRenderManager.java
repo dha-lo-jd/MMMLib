@@ -1,5 +1,6 @@
 package net.minecraft.src;
 
+import net.minecraft.client.renderer.MMM_ItemRenderer;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.item.ItemStack;
 

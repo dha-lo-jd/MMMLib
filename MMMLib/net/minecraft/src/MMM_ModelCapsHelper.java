@@ -1,6 +1,4 @@
-package net.minecraft.client.model;
-
-import net.minecraft.src.MMM_IModelCaps;
+package net.minecraft.src;
 
 /**
  * ModelCapsの補助関数群

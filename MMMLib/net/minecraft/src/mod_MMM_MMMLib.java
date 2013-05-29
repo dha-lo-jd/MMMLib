@@ -6,23 +6,24 @@ import java.util.Map;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.NetClientHandler;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.MMM_EntityDummy;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.network.NetServerHandler;
 import net.minecraft.network.packet.Packet250CustomPayload;
 
 public class mod_MMM_MMMLib extends BaseMod {
 
-	@MLProp()
-	public static boolean isDebugMessage = true;
-
+	public static final String Revision = "2";
+	
 	@MLProp()
 	public static boolean isDebugView = false;
+	@MLProp()
+	public static boolean isDebugMessage = true;
 	@MLProp(info = "Override RenderItem.")
 	public static boolean renderHacking = true;
-	public static final String Revision = "2";
 	@MLProp(info = "starting auto assigned ID.")
 	public static int startVehicleEntityID = 2176;
+
+
 
 	public static void Debug(String pText, Object... pVals) {
 		// デバッグメッセージ
@@ -31,47 +32,19 @@ public class mod_MMM_MMMLib extends BaseMod {
 		}
 	}
 
-	public static void sendToClient(NetServerHandler pHandler, byte[] pData) {
-		ModLoader.serverSendPacket(pHandler, new Packet250CustomPayload("MMM|Upd", pData));
-	}
-
-	@Override
-	public void addRenderer(Map var1) {
-		if (isDebugView) {
-			var1.put(MMM_EntityDummy.class, new MMM_RenderDummy());
-		}
-		//RenderItem
-		var1.put(EntityItem.class, new MMM_RenderItem());
-	}
-
-	@Override
-	public void clientConnect(NetClientHandler var1) {
-		MMM_Client.clientConnect(var1);
-	}
-
-	@Override
-	public void clientCustomPayload(NetClientHandler var1, Packet250CustomPayload var2) {
-		MMM_Client.clientCustomPayload(var1, var2);
-	}
-
-	@Override
-	public void clientDisconnect(NetClientHandler var1) {
-		MMM_Client.clientDisconnect(var1);
-	}
-
 	@Override
 	public String getName() {
 		return "MMMLib";
 	}
 
 	@Override
-	public String getPriorities() {
-		return MMM_Helper.isForge ? "befor-all" : "before:*";
-	}
-
-	@Override
 	public String getVersion() {
 		return "1.5.2-" + Revision;
+	}
+	
+	@Override
+	public String getPriorities() {
+		return MMM_Helper.isForge ? "befor-all" : "before:*";
 	}
 
 	@Override
@@ -86,7 +59,7 @@ public class mod_MMM_MMMLib extends BaseMod {
 		if (isDebugView) {
 			MMM_EntityDummy.isEnable = true;
 		}
-
+		
 		// 独自パケット用チャンネル
 		ModLoader.registerPacketChannel(this, "MMM|Upd");
 	}
@@ -95,20 +68,31 @@ public class mod_MMM_MMMLib extends BaseMod {
 	public void modsLoaded() {
 		// バイオームに設定されたスポーン情報を置き換え。
 		MMM_Helper.replaceBaiomeSpawn();
-
+		
+		// テクスチャパックの構築
+		MMM_TextureManager.loadTextures();
 		// ロード
 		if (MMM_Helper.isClient) {
 			// テクスチャパックの構築
-			MMM_TextureManager.loadTextures();
+//			MMM_TextureManager.loadTextures();
 			MMM_StabilizerManager.loadStabilizer();
 			MMM_Client.setArmorPrefix();
+			// テクスチャインデックスの構築
+			Debug("Localmode: InitTextureList.");
+			MMM_TextureManager.initTextureList(true);
 		} else {
-			MMM_TextureManager.loadTextureIndex();
+			MMM_TextureManager.loadTextureServer();
 		}
+		
+	}
 
-		// テクスチャインデックスの構築
-		Debug("Localmode: InitTextureList.");
-		MMM_TextureManager.initTextureList(true);
+	@Override
+	public void addRenderer(Map var1) {
+		if (isDebugView) {
+			var1.put(net.minecraft.src.MMM_EntityDummy.class, new MMM_RenderDummy());
+		}
+		//RenderItem
+		var1.put(EntityItem.class, new MMM_RenderItem());
 	}
 
 	@Override
@@ -122,16 +106,19 @@ public class mod_MMM_MMMLib extends BaseMod {
 						li.remove();
 					}
 				} catch (Exception e) {
-					//					e.printStackTrace();
+//					e.printStackTrace();
 				}
 			}
 		}
-
+		
 		// アイテムレンダーをオーバーライド
 		if (renderHacking && MMM_Helper.isClient) {
 			MMM_Client.setItemRenderer();
 		}
-
+		
+		// テクスチャ管理用
+		MMM_TextureManager.onUpdate();
+		
 		return true;
 	}
 
@@ -144,13 +131,11 @@ public class mod_MMM_MMMLib extends BaseMod {
 		if ((lmode & 0x80) != 0) {
 			leid = MMM_Helper.getInt(var2.data, 1);
 			lentity = MMM_Helper.getEntity(var2.data, 1, var1.playerEntity.worldObj);
-			if (lentity == null) {
-				return;
-			}
+			if (lentity == null) return;
 		}
 		Debug("MMM|Upd Srv Call[%2x:%d].", lmode, leid);
 		byte[] ldata;
-
+		
 		switch (lmode) {
 		case MMM_Statics.Server_SetTexturePackIndex:
 			// サーバー側のEntityに対してテクスチャインデックスを設定する
@@ -167,10 +152,28 @@ public class mod_MMM_MMMLib extends BaseMod {
 		}
 	}
 
-	// Forge
+	public static void sendToClient(NetServerHandler pHandler, byte[] pData) {
+		ModLoader.serverSendPacket(pHandler, new Packet250CustomPayload("MMM|Upd", pData));
+	}
+
 	@Override
+	public void clientCustomPayload(NetClientHandler var1, Packet250CustomPayload var2) {
+		MMM_Client.clientCustomPayload(var1, var2);
+	}
+
+	@Override
+	public void clientConnect(NetClientHandler var1) {
+		MMM_Client.clientConnect(var1);
+	}
+
+	@Override
+	public void clientDisconnect(NetClientHandler var1) {
+		MMM_Client.clientDisconnect(var1);
+	}
+
+	// Forge
 	public void serverDisconnect() {
-		MMM_TextureManager.saveTextureIndex();
+		MMM_TextureManager.saveTextureServer();
 	}
 
 }

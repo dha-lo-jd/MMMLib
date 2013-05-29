@@ -1,4 +1,4 @@
-package net.minecraft.client.model;
+package net.minecraft.src;
 
 import net.minecraft.util.MathHelper;
 
@@ -8,16 +8,16 @@ import org.lwjgl.opengl.GL11;
  * 旧型モデル互換のベースモデル。
  * 関節リンクしていない
  */
-public class MMM_ModelLittleMaid_Archetype extends MMM_ModelLittleMaid {
+public class MMM_ModelLittleMaid_Archetype extends MMM_ModelLittleMaidBase {
 
 	// fields
 	public MMM_ModelRenderer bipedHeadwear;
-	public MMM_ModelRenderer ChignonB;
-	public MMM_ModelRenderer ChignonL;
 	public MMM_ModelRenderer ChignonR;
-	public MMM_ModelRenderer SideTailL;
-	public MMM_ModelRenderer SideTailR;
+	public MMM_ModelRenderer ChignonL;
+	public MMM_ModelRenderer ChignonB;
 	public MMM_ModelRenderer Tail;
+	public MMM_ModelRenderer SideTailR;
+	public MMM_ModelRenderer SideTailL;
 
 	public MMM_ModelLittleMaid_Archetype() {
 		super();
@@ -27,53 +27,8 @@ public class MMM_ModelLittleMaid_Archetype extends MMM_ModelLittleMaid {
 		super(f);
 	}
 
-	public MMM_ModelLittleMaid_Archetype(float f, float f1) {
-		super(f, f1);
-	}
-
-	public void equippedBlockPosition() {
-		// 手持ちブロックの表示位置
-		GL11.glTranslatef(0.0F, 0.1275F, -0.3125F);
-	}
-
-	public void equippedHeadItemPosition() {
-		// 頭部着装アイテムの表示位置
-		GL11.glTranslatef(0.0F, 1.0F, 0.0F);
-	}
-
-	public void equippedItemBow() {
-		// 手持ち弓の表示位置
-		// GL11.glTranslatef(-0.07F, 0.005F, 0.3F);
-		equippedItemPosition3D();
-		// GL11.glTranslatef(-0.09F, -0.125F, 0.3F);
-		GL11.glTranslatef(-0.05F, -0.075F, 0.1F);
-	}
-
-	public void equippedItemPosition() {
-		// 手持ちアイテムの表示位置
-		GL11.glTranslatef(0.20F, 0.0800F, -0.0875F);
-	}
-
-	public void equippedItemPosition3D() {
-		// 手持ち３Dアイテムの表示位置
-		GL11.glTranslatef(0.02F, 0.1300F, 0.0F);
-	}
-
-	@Override
-	public float getHeight() {
-		// 身長
-		return 1.35F;
-	}
-
-	@Override
-	public String getUsingTexture() {
-		return "default";
-	}
-
-	@Override
-	public float getWidth() {
-		// 横幅
-		return 0.5F;
+	public MMM_ModelLittleMaid_Archetype(float f, float f1, int pTextureWidth, int pTextureHeight) {
+		super(f, f1, pTextureWidth, pTextureHeight);
 	}
 
 	@Override
@@ -89,134 +44,155 @@ public class MMM_ModelLittleMaid_Archetype extends MMM_ModelLittleMaid {
 		// 装備位置
 		Arms = new MMM_ModelRenderer[1];
 		Arms[0] = new MMM_ModelRenderer(this, 0, 0);
-		Arms[0].setRotationPointMM(-1F, 5F, -1F);
-		HeadMount.setRotationPointMM(0F, -4F, 0F);
-		HeadTop.setRotationPointMM(0F, -8F, 0F);
+		Arms[0].setRotationPoint(-1F, 5F, -1F);
+		HeadMount.setRotationPoint(0F, -4F, 0F);
+		HeadTop.setRotationPoint(0F, -13F, 0F);
 
 		bipedHead = new MMM_ModelRenderer(this, 0, 0);
-		bipedHead.addBoxMM(-4F, -8F, -4F, 8, 8, 8, psize);
-		bipedHead.setRotationPointMM(0F, 0F, 0F);
-		bipedHead.addChildMM(HeadMount);
-		bipedHead.addChildMM(HeadTop);
+		bipedHead.addBox(-4F, -8F, -4F, 8, 8, 8, psize);
+		bipedHead.setRotationPoint(0F, 0F, 0F);
+		bipedHead.addChild(HeadMount);
+		bipedHead.addChild(HeadTop);
 
 		bipedHeadwear = new MMM_ModelRenderer(this, 24, 0);
-		bipedHeadwear.addBoxMM(-4F, 0F, 1F, 8, 4, 3, psize);
-		bipedHeadwear.setRotationPointMM(0F, 0F, 0F);
-		bipedHead.addChildMM(bipedHeadwear);
+		bipedHeadwear.addBox(-4F, 0F, 1F, 8, 4, 3, psize);
+		bipedHeadwear.setRotationPoint(0F, 0F, 0F);
+		bipedHead.addChild(bipedHeadwear);
 
 		bipedBody = new MMM_ModelRenderer(this, 32, 8);
-		bipedBody.addBoxMM(-3F, 0F, -2F, 6, 7, 4, psize);
-		bipedBody.setRotationPointMM(0F, 0F, 0F);
+		bipedBody.addBox(-3F, 0F, -2F, 6, 7, 4, psize);
+		bipedBody.setRotationPoint(0F, 0F, 0F);
 
 		bipedRightArm = new MMM_ModelRenderer(this, 48, 0);
-		bipedRightArm.addBoxMM(-2.0F, -1F, -1F, 2, 8, 2, psize);
-		bipedRightArm.setRotationPointMM(-3.0F, 1.5F, 0F);
-		bipedRightArm.addChildMM(Arms[0]);
+		bipedRightArm.addBox(-2.0F, -1F, -1F, 2, 8, 2, psize);
+		bipedRightArm.setRotationPoint(-3.0F, 1.5F, 0F);
+		bipedRightArm.addChild(Arms[0]);
 
 		bipedLeftArm = new MMM_ModelRenderer(this, 56, 0);
-		bipedLeftArm.addBoxMM(0.0F, -1F, -1F, 2, 8, 2, psize);
-		bipedLeftArm.setRotationPointMM(3.0F, 1.5F, 0F);
+		bipedLeftArm.addBox(0.0F, -1F, -1F, 2, 8, 2, psize);
+		bipedLeftArm.setRotationPoint(3.0F, 1.5F, 0F);
 
 		bipedRightLeg = new MMM_ModelRenderer(this, 32, 19);
-		bipedRightLeg.addBoxMM(-2F, 0F, -2F, 3, 9, 4, psize);
-		bipedRightLeg.setRotationPointMM(-1F, 7F, 0F);
+		bipedRightLeg.addBox(-2F, 0F, -2F, 3, 9, 4, psize);
+		bipedRightLeg.setRotationPoint(-1F, 7F, 0F);
 
 		bipedLeftLeg = new MMM_ModelRenderer(this, 32, 19);
 		bipedLeftLeg.setMirror(true);
-		bipedLeftLeg.addBoxMM(-1F, 0F, -2F, 3, 9, 4, psize);
-		bipedLeftLeg.setRotationPointMM(1F, 7F, 0F);
+		bipedLeftLeg.addBox(-1F, 0F, -2F, 3, 9, 4, psize);
+		bipedLeftLeg.setRotationPoint(1F, 7F, 0F);
 
 		Skirt = new MMM_ModelRenderer(this, 0, 16);
-		Skirt.addBoxMM(-4F, -2F, -4F, 8, 8, 8, psize);
-		Skirt.setRotationPointMM(0F, 7F, 0F);
+		Skirt.addBox(-4F, -2F, -4F, 8, 8, 8, psize);
+		Skirt.setRotationPoint(0F, 7F, 0F);
 
 		ChignonR = new MMM_ModelRenderer(this, 24, 18);
-		ChignonR.addBoxMM(-5F, -7F, 0.2F, 1, 3, 3, psize);
-		ChignonR.setRotationPointMM(0F, 0F, 0F);
-		bipedHead.addChildMM(ChignonR);
+		ChignonR.addBox(-5F, -7F, 0.2F, 1, 3, 3, psize);
+		ChignonR.setRotationPoint(0F, 0F, 0F);
+		bipedHead.addChild(ChignonR);
 
 		ChignonL = new MMM_ModelRenderer(this, 24, 18);
-		ChignonL.addBoxMM(4F, -7F, 0.2F, 1, 3, 3, psize);
-		ChignonL.setRotationPointMM(0F, 0F, 0F);
-		bipedHead.addChildMM(ChignonL);
+		ChignonL.addBox(4F, -7F, 0.2F, 1, 3, 3, psize);
+		ChignonL.setRotationPoint(0F, 0F, 0F);
+		bipedHead.addChild(ChignonL);
 
 		ChignonB = new MMM_ModelRenderer(this, 52, 10);
-		ChignonB.addBoxMM(-2F, -7.2F, 4F, 4, 4, 2, psize);
-		ChignonB.setRotationPointMM(0F, 0F, 0F);
-		bipedHead.addChildMM(ChignonB);
+		ChignonB.addBox(-2F, -7.2F, 4F, 4, 4, 2, psize);
+		ChignonB.setRotationPoint(0F, 0F, 0F);
+		bipedHead.addChild(ChignonB);
 
 		Tail = new MMM_ModelRenderer(this, 46, 20);
-		Tail.addBoxMM(-1.5F, -6.8F, 4F, 3, 9, 3, psize);
-		Tail.setRotationPointMM(0F, 0F, 0F);
-		bipedHead.addChildMM(Tail);
+		Tail.addBox(-1.5F, -6.8F, 4F, 3, 9, 3, psize);
+		Tail.setRotationPoint(0F, 0F, 0F);
+		bipedHead.addChild(Tail);
 
 		SideTailR = new MMM_ModelRenderer(this, 58, 21);
-		SideTailR.addBoxMM(-5.5F, -6.8F, 0.9F, 1, 8, 2, psize);
-		SideTailR.setRotationPointMM(0.0F, 0.0F, 0.0F);
-		bipedHead.addChildMM(SideTailR);
+		SideTailR.addBox(-5.5F, -6.8F, 0.9F, 1, 8, 2, psize);
+		SideTailR.setRotationPoint(0.0F, 0.0F, 0.0F);
+		bipedHead.addChild(SideTailR);
 
 		SideTailL = new MMM_ModelRenderer(this, 58, 21);
 		SideTailL.setMirror(true);
-		SideTailL.addBoxMM(4.5F, -6.8F, 0.9F, 1, 8, 2, psize);
-		SideTailL.setRotationPointMM(0.0F, 0.0F, 0.0F);
-		bipedHead.addChildMM(SideTailL);
+		SideTailL.addBox(4.5F, -6.8F, 0.9F, 1, 8, 2, psize);
+		SideTailL.setRotationPoint(0.0F, 0.0F, 0.0F);
+		bipedHead.addChild(SideTailL);
 
 		mainFrame = new MMM_ModelRenderer(this, 0, 0);
-		mainFrame.setRotationPointMM(0F, 0F + pyoffset, 0F);
-		mainFrame.addChildMM(bipedHead);
-		mainFrame.addChildMM(bipedBody);
-		mainFrame.addChildMM(bipedRightArm);
-		mainFrame.addChildMM(bipedLeftArm);
-		mainFrame.addChildMM(bipedRightLeg);
-		mainFrame.addChildMM(bipedLeftLeg);
-		mainFrame.addChildMM(Skirt);
+		mainFrame.setRotationPoint(0F, 0F + pyoffset, 0F);
+		mainFrame.addChild(bipedHead);
+		mainFrame.addChild(bipedBody);
+		mainFrame.addChild(bipedRightArm);
+		mainFrame.addChild(bipedLeftArm);
+		mainFrame.addChild(bipedRightLeg);
+		mainFrame.addChild(bipedLeftLeg);
+		mainFrame.addChild(Skirt);
 
 	}
 
 	@Override
+	public String getUsingTexture() {
+		return "default";
+	}
+
+	public float getHeight() {
+		// 身長
+		return 1.35F;
+	}
+
+	public float getWidth() {
+		// 横幅
+		return 0.5F;
+	}
+
+	public void equippedBlockPosition() {
+		// 手持ちブロックの表示位置
+		GL11.glTranslatef(0.0F, 0.1275F, -0.3125F);
+	}
+
+	public void equippedItemPosition3D() {
+		// 手持ち３Dアイテムの表示位置
+		GL11.glTranslatef(0.02F, 0.1300F, 0.0F);
+	}
+
+	public void equippedItemPosition() {
+		// 手持ちアイテムの表示位置
+		GL11.glTranslatef(0.20F, 0.0800F, -0.0875F);
+	}
+
+	public void equippedHeadItemPosition() {
+		// 頭部着装アイテムの表示位置
+		GL11.glTranslatef(0.0F, 1.0F, 0.0F);
+	}
+
+	public void equippedItemBow() {
+		// 手持ち弓の表示位置
+		// GL11.glTranslatef(-0.07F, 0.005F, 0.3F);
+		equippedItemPosition3D();
+		// GL11.glTranslatef(-0.09F, -0.125F, 0.3F);
+		GL11.glTranslatef(-0.05F, -0.075F, 0.1F);
+	}
+
 	public boolean isItemHolder() {
 		// アイテムを持っているときに手を前に出すかどうか。
 		return false;
 	}
 
 	@Override
-	public void renderItems() {
-		// 手持ちの表示
-		GL11.glPushMatrix();
-		if (entityCaps != null) {
-			int ldominant = MMM_ModelCapsHelper.getCapsValueInt(entityCaps, caps_dominantArm);
-			Arms[0].loadMatrix().renderItems(this, false, ldominant);
-			// 頭部装飾品
-			boolean lplanter = MMM_ModelCapsHelper.getCapsValueBoolean(entityCaps, caps_isPlanter);
-			if (MMM_ModelCapsHelper.getCapsValueBoolean(entityCaps, caps_isCamouflage) || lplanter) {
-				HeadMount.loadMatrix();
-				if (lplanter) {
-					HeadTop.renderItemsHead(this);
-				} else {
-					HeadMount.renderItemsHead(this);
-				}
-			}
-		}
-		GL11.glPopMatrix();
-	}
-
-	@Override
-	public void setLivingAnimationsMM(float par2, float par3, float pRenderPartialTicks) {
-		super.setLivingAnimationsMM(par2, par3, pRenderPartialTicks);
-		float f3 = MMM_ModelCapsHelper.getCapsValueFloat(entityCaps, caps_interestedAngle, pRenderPartialTicks);
+	public void setLivingAnimations(MMM_IModelCaps pEntityCaps, float par2, float par3, float pRenderPartialTicks) {
+		super.setLivingAnimations(pEntityCaps, par2, par3, pRenderPartialTicks);
+		float f3 = MMM_ModelCapsHelper.getCapsValueFloat(pEntityCaps, caps_interestedAngle, pRenderPartialTicks);
 		bipedHead.rotateAngleZ = f3;
-		bipedHeadwear.rotateAngleZ = f3;
+//		bipedHeadwear.rotateAngleZ = f3;
 	}
 
 	@Override
-	public void setRotationAnglesMM(float par1, float par2,
-			float pTicksExisted, float pHeadYaw, float pHeadPitch, float par6) {
-		//		super.setRotationAnglesMM(par1, par2, pTicksExisted, pHeadYaw, pHeadPitch, par6);
-
+	public void setRotationAngles(float par1, float par2, float pTicksExisted,
+			float pHeadYaw, float pHeadPitch, float par6, MMM_IModelCaps pEntityCaps) {
+//		super.setRotationAnglesMM(par1, par2, pTicksExisted, pHeadYaw, pHeadPitch, par6);
+		
 		bipedHead.rotateAngleY = pHeadYaw / 57.29578F;
 		bipedHead.rotateAngleX = pHeadPitch / 57.29578F;
-		bipedHeadwear.rotateAngleY = bipedHead.rotateAngleY;
-		bipedHeadwear.rotateAngleX = bipedHead.rotateAngleX;
+//		bipedHeadwear.rotateAngleY = bipedHead.rotateAngleY;
+		bipedHeadwear.rotateAngleX = 0F;
 		bipedRightArm.rotateAngleX = mh_cos(par1 * 0.6662F + 3.141593F) * 2.0F * par2 * 0.5F;
 		bipedLeftArm.rotateAngleX = mh_cos(par1 * 0.6662F) * 2.0F * par2 * 0.5F;
 		bipedRightArm.rotateAngleZ = 0.0F;
@@ -238,18 +214,19 @@ public class MMM_ModelLittleMaid_Archetype extends MMM_ModelLittleMaid {
 		// アイテム持ってるときの腕振りを抑える
 		if (heldItemLeft != 0) {
 			bipedLeftArm.rotateAngleX = bipedLeftArm.rotateAngleX * 0.5F
-					- 0.3141593F * heldItemLeft;
+					- 0.3141593F * (float) heldItemLeft;
 		}
 		if (heldItemRight != 0) {
 			bipedRightArm.rotateAngleX = bipedRightArm.rotateAngleX * 0.5F
-					- 0.3141593F * heldItemRight;
+					- 0.3141593F * (float) heldItemRight;
 		}
-
+		
 		bipedRightArm.rotateAngleY = 0.0F;
 		bipedLeftArm.rotateAngleY = 0.0F;
-		if (onGround > -9990F && !aimedBow) {
+		float lonGround = Math.max(onGrounds[0], onGrounds[1]);
+		if (lonGround > -9990F && !aimedBow) {
 			// 腕振り
-			float f6 = onGround;
+			float f6 = lonGround;
 			bipedBody.rotateAngleY = MathHelper
 					.sin(mh_sqrt_float(f6) * 3.141593F * 2.0F) * 0.2F;
 			Skirt.rotateAngleY = bipedBody.rotateAngleY;
@@ -264,17 +241,16 @@ public class MMM_ModelLittleMaid_Archetype extends MMM_ModelLittleMaid {
 			bipedRightArm.rotateAngleY += bipedBody.rotateAngleY;
 			bipedLeftArm.rotateAngleY += bipedBody.rotateAngleY;
 			bipedLeftArm.rotateAngleX += bipedBody.rotateAngleY;
-			f6 = 1.0F - onGround;
+			f6 = 1.0F - lonGround;
 			f6 *= f6;
 			f6 *= f6;
 			f6 = 1.0F - f6;
 			float f7 = mh_sin(f6 * 3.141593F);
-			float f8 = mh_sin(onGround * 3.141593F)
+			float f8 = mh_sin(lonGround * 3.141593F)
 					* -(bipedHead.rotateAngleX - 0.7F) * 0.75F;
-			bipedRightArm.rotateAngleX -= f7 * 1.2D + f8;
+			bipedRightArm.rotateAngleX -= (double) f7 * 1.2D + (double) f8;
 			bipedRightArm.rotateAngleY += bipedBody.rotateAngleY * 2.0F;
-			bipedRightArm.rotateAngleZ = mh_sin(onGround * 3.141593F)
-					* -0.4F;
+			bipedRightArm.rotateAngleZ = mh_sin(lonGround * 3.141593F) * -0.4F;
 		}
 		if (isSneak) {
 			// しゃがみ
@@ -317,9 +293,9 @@ public class MMM_ModelLittleMaid_Archetype extends MMM_ModelLittleMaid {
 		} else {
 			if (aimedBow) {
 				// 弓構え
-				float f6 = mh_sin(onGround * 3.141593F);
-				float f7 = mh_sin((1.0F - (1.0F - onGround)
-						* (1.0F - onGround)) * 3.141593F);
+				float f6 = mh_sin(lonGround * 3.141593F);
+				float f7 = mh_sin((1.0F - (1.0F - lonGround)
+						* (1.0F - lonGround)) * 3.141593F);
 				bipedRightArm.rotateAngleZ = 0.0F;
 				bipedLeftArm.rotateAngleZ = 0.0F;
 				bipedRightArm.rotateAngleY = -(0.1F - f6 * 0.6F);
@@ -352,6 +328,28 @@ public class MMM_ModelLittleMaid_Archetype extends MMM_ModelLittleMaid {
 				bipedLeftArm.rotateAngleX -= mh_sin(pTicksExisted * 0.067F) * 0.05F;
 			}
 		}
+
+	}
+
+	@Override
+	public void renderItems(MMM_IModelCaps pEntityCaps) {
+		// 手持ちの表示
+		GL11.glPushMatrix();
+		if (pEntityCaps != null) {
+			int ldominant = MMM_ModelCapsHelper.getCapsValueInt(pEntityCaps, caps_dominantArm);
+			Arms[0].loadMatrix().renderItems(this, pEntityCaps, false, ldominant);
+			// 頭部装飾品
+			boolean lplanter = MMM_ModelCapsHelper.getCapsValueBoolean(pEntityCaps, caps_isPlanter);
+			if (MMM_ModelCapsHelper.getCapsValueBoolean(pEntityCaps, caps_isCamouflage) || lplanter) {
+				HeadMount.loadMatrix();
+				if (lplanter) {
+					HeadTop.loadMatrix().renderItemsHead(this, pEntityCaps);
+				} else {
+					HeadMount.loadMatrix().renderItemsHead(this, pEntityCaps);
+				}
+			}
+		}
+		GL11.glPopMatrix();
 	}
 
 }

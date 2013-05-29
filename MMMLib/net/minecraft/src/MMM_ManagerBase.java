@@ -26,8 +26,7 @@ public abstract class MMM_ManagerBase<T> {
 		try {
 			reflections = new Reflections("");
 
-			Set<Class<? extends T>> allClasses =
-					reflections.getSubTypesOf(cls);
+			Set<Class<? extends T>> allClasses = reflections.getSubTypesOf(cls);
 
 			// ブートクラスパスから、"java.io"パッケージ以下のクラス一覧を取得する。
 			for (Class<? extends T> f : allClasses) {
@@ -108,6 +107,9 @@ public abstract class MMM_ManagerBase<T> {
 
 	}
 
+	@SuppressWarnings({
+			"rawtypes", "unchecked"
+	})
 	private void loadClass(String pname) {
 		// 対象ファイルをクラスとしてロード
 		try {
