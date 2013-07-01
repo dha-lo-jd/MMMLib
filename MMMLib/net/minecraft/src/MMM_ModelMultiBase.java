@@ -10,8 +10,7 @@ import java.util.Map;
  */
 public abstract class MMM_ModelMultiBase extends MMM_ModelBase implements MMM_IModelCaps {
 
-	public float heldItemLeft;
-	public float heldItemRight;
+	public float heldItem[] = new float[] {0.0F, 0.0F};
 	public boolean aimedBow;
 	public boolean isSneak;
 	public boolean isWait;
@@ -40,6 +39,7 @@ public abstract class MMM_ModelMultiBase extends MMM_ModelBase implements MMM_IM
 		put("aimedBow",			caps_aimedBow);
 		put("ScaleFactor", 		caps_ScaleFactor);
 		put("entityIdFactor",	caps_entityIdFactor);
+		put("dominantArm",	caps_dominantArm);
 	}};
 
 
@@ -53,8 +53,6 @@ public abstract class MMM_ModelMultiBase extends MMM_ModelBase implements MMM_IM
 	}
 
 	public MMM_ModelMultiBase(float pSizeAdjust, float pYOffset, int pTextureWidth, int pTextureHeight) {
-		heldItemLeft = 0;
-		heldItemRight = 0;
 		isSneak = false;
 		aimedBow = false;
 		textureWidth = pTextureWidth;
@@ -84,7 +82,8 @@ public abstract class MMM_ModelMultiBase extends MMM_ModelBase implements MMM_IM
 	public abstract float[] getArmorModelsSize();
 
 	/**
-	 * モデル指定詞に依らずに使用するテクスチャパック名
+	 * モデル指定詞に依らずに使用するテクスチャパック名。
+	 * 一つのテクスチャに複数のモデルを割り当てる時に使う。
 	 * @return
 	 */
 	public String getUsingTexture() {
@@ -101,7 +100,6 @@ public abstract class MMM_ModelMultiBase extends MMM_ModelBase implements MMM_IM
 	public abstract float getWidth();
 	/**
 	 * モデルのYオフセット
-	 * PF用。
 	 */
 	public abstract float getyOffset();
 	/**
@@ -169,9 +167,9 @@ public abstract class MMM_ModelMultiBase extends MMM_ModelBase implements MMM_IM
 		case caps_isChild:
 			return isChild;
 		case caps_heldItemLeft:
-			return heldItemLeft;
+			return heldItem[1];
 		case caps_heldItemRight:
-			return heldItemRight;
+			return heldItem[0];
 		case caps_aimedBow:
 			return aimedBow;
 		case caps_entityIdFactor:
@@ -180,6 +178,8 @@ public abstract class MMM_ModelMultiBase extends MMM_ModelBase implements MMM_IM
 			return entityTicksExisted;
 		case caps_ScaleFactor:
 			return scaleFactor;
+		case caps_dominantArm:
+			return dominantArm;
 		}
 		return null;
 	}
@@ -205,10 +205,10 @@ public abstract class MMM_ModelMultiBase extends MMM_ModelBase implements MMM_IM
 			isChild = (Boolean)pArg[0];
 			return true;
 		case caps_heldItemLeft:
-			heldItemLeft = (Integer)pArg[0];
+			heldItem[1] = (Integer)pArg[0];
 			return true;
 		case caps_heldItemRight:
-			heldItemRight = (Integer)pArg[0];
+			heldItem[0] = (Integer)pArg[0];
 			return true;
 		case caps_aimedBow:
 			aimedBow = (Boolean)pArg[0];
@@ -221,6 +221,9 @@ public abstract class MMM_ModelMultiBase extends MMM_ModelBase implements MMM_IM
 			return true;
 		case caps_ScaleFactor:
 			scaleFactor = (Float)pArg[0];
+			return true;
+		case caps_dominantArm:
+			dominantArm = (Integer)pArg[0];
 			return true;
 		}
 		

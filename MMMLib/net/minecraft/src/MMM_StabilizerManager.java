@@ -7,7 +7,7 @@ import java.util.TreeMap;
 /**
  * 追加パーツたるスタビライザーを管理する
  */
-public class MMM_StabilizerManager extends MMM_ManagerBase<MMM_ModelStabilizerBase> {
+public class MMM_StabilizerManager extends MMM_ManagerBase {
 
 	public static final String preFix = "ModelStabilizer";
 	public static Map<String, MMM_ModelStabilizerBase> stabilizerList = new TreeMap<String, MMM_ModelStabilizerBase>();
@@ -47,13 +47,13 @@ public class MMM_StabilizerManager extends MMM_ManagerBase<MMM_ModelStabilizerBa
 	}
 
 	@Override
-	public boolean append(Class<? extends MMM_ModelStabilizerBase> pclass) {
+	public boolean append(Class pclass) {
 		if (!(MMM_ModelStabilizerBase.class).isAssignableFrom(pclass)) {
 			return false;
 		}
 
 		try {
-			MMM_ModelStabilizerBase lms = pclass.newInstance();
+			MMM_ModelStabilizerBase lms = (MMM_ModelStabilizerBase) pclass.newInstance();
 			stabilizerList.put(lms.getName(), lms);
 			return true;
 		} catch (Exception e) {

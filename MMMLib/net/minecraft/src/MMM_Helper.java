@@ -25,6 +25,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.pathfinding.PathNavigate;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.EnumMovingObjectType;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
@@ -437,23 +438,11 @@ public class MMM_Helper {
 	}
 
 	/**
-	 * Forge対策用のメソッド
-	 */
-	public static ItemStack getSmeltingResult(ItemStack pItemstack) {
-		if (methGetSmeltingResultForge != null) {
-			try {
-				return (ItemStack)methGetSmeltingResultForge.invoke(FurnaceRecipes.smelting(), pItemstack);
-			}catch (Exception e) {
-			}
-		}
-		return FurnaceRecipes.smelting().getSmeltingResult(pItemstack.itemID);
-	}
-
-	/**
 	 * EntityListに登録されていいるEntityを置き換える。
 	 */
 	public static void replaceEntityList(Class pSrcClass, Class pDestClass) {
 		// EntityList登録情報を置き換え
+		// 古いEntityでもスポーンできるように一部の物は二重登録
 		try {
 			// stringToClassMapping
 			Map lmap;
@@ -469,7 +458,7 @@ public class MMM_Helper {
 			lmap = (Map)ModLoader.getPrivateValue(EntityList.class, null, 1);
 			if (lmap.containsKey(pSrcClass)) {
 				ls = (String)lmap.get(pSrcClass);
-				lmap.remove(pSrcClass);
+//				lmap.remove(pSrcClass);
 				lmap.put(pDestClass, ls);
 			}
 			// IDtoClassMapping
@@ -483,7 +472,7 @@ public class MMM_Helper {
 			lmap = (Map)ModLoader.getPrivateValue(EntityList.class, null, 3);
 			if (lmap.containsKey(pSrcClass)) {
 				lint = (Integer)lmap.get(pSrcClass);
-				lmap.remove(pSrcClass);
+//				lmap.remove(pSrcClass);
 				lmap.put(pDestClass, lint);
 			}
 			replaceEntitys.put(pSrcClass, pDestClass);
@@ -527,5 +516,86 @@ public class MMM_Helper {
 		}
 	}
 
-	
+	/**
+	 * 視線の先にいる最初のEntityを返す
+	 * @param pEntity
+	 * 視点
+	 * @param pRange
+	 * 視線の有効距離
+	 * @param pDelta
+	 * 時刻補正
+	 * @param pExpand
+	 * 検知領域の拡大範囲
+	 * @return
+	 */
+	public static Entity getRayTraceEntity(EntityLiving pEntity, double pRange, float pDelta, float pExpand) {
+		Vec3 lvpos = pEntity.worldObj.getWorldVec3Pool().getVecFromPool(
+				pEntity.posX, pEntity.posY + pEntity.getEyeHeight(), pEntity.posZ);
+//		Vec3 lvpos = pEntity.getPosition(pDelta).addVector(0D, pEntity.getEyeHeight(), 0D);
+		Vec3 lvlook = pEntity.getLook(pDelta);
+		Vec3 lvview = lvpos.addVector(lvlook.xCoord * pRange, lvlook.yCoord * pRange, lvlook.zCoord * pRange);
+		Entity ltarget = null;
+		List llist = pEntity.worldObj.getEntitiesWithinAABBExcludingEntity(pEntity, pEntity.boundingBox.addCoord(lvlook.xCoord * pRange, lvlook.yCoord * pRange, lvlook.zCoord * pRange).expand((double)pExpand, (double)pExpand, (double)pExpand));
+		double ltdistance = pRange * pRange;
+		
+		for (int var13 = 0; var13 < llist.size(); ++var13) {
+			Entity lentity = (Entity)llist.get(var13);
+			
+			if (lentity.canBeCollidedWith()) {
+				float lexpand = lentity.getCollisionBorderSize() + 0.3F;
+				AxisAlignedBB laabb = lentity.boundingBox.expand((double)lexpand, (double)lexpand, (double)lexpand);
+				MovingObjectPosition lmop = laabb.calculateIntercept(lvpos, lvview);
+				
+				if (laabb.isVecInside(lvpos)) {
+					if (0.0D < ltdistance || ltdistance == 0.0D) {
+						ltarget = lentity;
+						ltdistance = 0.0D;
+					}
+				} else if (lmop != null) {
+					double ldis = lvpos.squareDistanceTo(lmop.hitVec);
+					
+					if (ldis < ltdistance || ltdistance == 0.0D) {
+						ltarget = lentity;
+						ltdistance = ldis;
+					}
+				}
+			}
+		}
+		return ltarget;
+	}
+
+
+	// Forge対策
+
+	/**
+	 * Forge対策用のメソッド
+	 */
+	public static ItemStack getSmeltingResult(ItemStack pItemstack) {
+		if (methGetSmeltingResultForge != null) {
+			try {
+				return (ItemStack)methGetSmeltingResultForge.invoke(FurnaceRecipes.smelting(), pItemstack);
+			}catch (Exception e) {
+			}
+		}
+		return FurnaceRecipes.smelting().getSmeltingResult(pItemstack.itemID);
+	}
+
+	/**
+	 * アイテムに追加効果が在るかを判定する。
+	 * Forge対策。
+	 * @param pItemStack
+	 * @return
+	 */
+	public static boolean hasEffect(ItemStack pItemStack) {
+		// マジClientSIDEとか辞めてほしい。
+		if (pItemStack != null) {
+			Item litem = pItemStack.getItem();
+			if (litem instanceof ItemPotion) {
+				List llist = ((ItemPotion)litem).getEffects(pItemStack);
+				return llist != null && !llist.isEmpty();
+			}
+		}
+		return false;
+	}
+
 }

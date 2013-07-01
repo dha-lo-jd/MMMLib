@@ -11,29 +11,26 @@ import java.util.zip.ZipInputStream;
 
 import org.reflections.Reflections;
 
-public abstract class MMM_ManagerBase<T> {
+public abstract class MMM_ManagerBase {
 
 	/**
 	 * 追加処理の本体
 	 */
-	public abstract boolean append(Class<? extends T> pclass);
+	public abstract boolean append(Class pclass);
 
 	public abstract String getPreFix();
 
-	public void load(Class<T> cls) {
+	public void load(Class<?> cls) {
 		// ロード
-		Reflections reflections;
-		try {
-			reflections = new Reflections("");
 
-			Set<Class<? extends T>> allClasses = reflections.getSubTypesOf(cls);
-
-			// ブートクラスパスから、"java.io"パッケージ以下のクラス一覧を取得する。
-			for (Class<? extends T> f : allClasses) {
-				append(f);
+		{
+			Set<? extends Class<?>> classes = new Reflections("").getSubTypesOf(cls);
+			for (Class<?> lclass : classes) {
+				if (Modifier.isAbstract(lclass.getModifiers())) {
+					continue;
+				}
+				append(lclass);
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 
 		// 開発用
@@ -107,9 +104,6 @@ public abstract class MMM_ManagerBase<T> {
 
 	}
 
-	@SuppressWarnings({
-			"rawtypes", "unchecked"
-	})
 	private void loadClass(String pname) {
 		// 対象ファイルをクラスとしてロード
 		try {

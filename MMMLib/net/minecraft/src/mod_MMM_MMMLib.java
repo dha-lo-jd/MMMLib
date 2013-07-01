@@ -12,7 +12,7 @@ import net.minecraft.network.packet.Packet250CustomPayload;
 
 public class mod_MMM_MMMLib extends BaseMod {
 
-	public static final String Revision = "2";
+	public static final String Revision = "6a";
 	
 	@MLProp()
 	public static boolean isDebugView = false;
@@ -22,6 +22,8 @@ public class mod_MMM_MMMLib extends BaseMod {
 	public static boolean renderHacking = true;
 	@MLProp(info = "starting auto assigned ID.")
 	public static int startVehicleEntityID = 2176;
+	@MLProp(info="true: AlphaBlend(request power), false: AlphaTest(more fast)")
+	public static boolean isModelAlphaBlend = true;
 
 
 
@@ -53,7 +55,7 @@ public class mod_MMM_MMMLib extends BaseMod {
 		Debug(MMM_Helper.isClient ? "Client" : "Server");
 		Debug(MMM_Helper.isForge ? "Forge" : "Modloader");
 		MMM_FileManager.init();
-		MMM_TextureManager.init();
+		MMM_TextureManager.instance.init();
 		MMM_StabilizerManager.init();
 		ModLoader.setInGameHook(this, true, true);
 		if (isDebugView) {
@@ -70,7 +72,7 @@ public class mod_MMM_MMMLib extends BaseMod {
 		MMM_Helper.replaceBaiomeSpawn();
 		
 		// テクスチャパックの構築
-		MMM_TextureManager.loadTextures();
+		MMM_TextureManager.instance.loadTextures();
 		// ロード
 		if (MMM_Helper.isClient) {
 			// テクスチャパックの構築
@@ -79,9 +81,9 @@ public class mod_MMM_MMMLib extends BaseMod {
 			MMM_Client.setArmorPrefix();
 			// テクスチャインデックスの構築
 			Debug("Localmode: InitTextureList.");
-			MMM_TextureManager.initTextureList(true);
+			MMM_TextureManager.instance.initTextureList(true);
 		} else {
-			MMM_TextureManager.loadTextureServer();
+			MMM_TextureManager.instance.loadTextureServer();
 		}
 		
 	}
@@ -91,8 +93,10 @@ public class mod_MMM_MMMLib extends BaseMod {
 		if (isDebugView) {
 			var1.put(net.minecraft.src.MMM_EntityDummy.class, new MMM_RenderDummy());
 		}
-		//RenderItem
+		// RenderItem
 		var1.put(EntityItem.class, new MMM_RenderItem());
+		// RenderSelect
+		var1.put(MMM_EntitySelect.class, new MMM_RenderModelMulti(0.0F));
 	}
 
 	@Override
@@ -117,7 +121,7 @@ public class mod_MMM_MMMLib extends BaseMod {
 		}
 		
 		// テクスチャ管理用
-		MMM_TextureManager.onUpdate();
+		MMM_TextureManager.instance.onUpdate();
 		
 		return true;
 	}
@@ -139,15 +143,15 @@ public class mod_MMM_MMMLib extends BaseMod {
 		switch (lmode) {
 		case MMM_Statics.Server_SetTexturePackIndex:
 			// サーバー側のEntityに対してテクスチャインデックスを設定する
-			MMM_TextureManager.reciveFromClientSetTexturePackIndex(lentity, var2.data);
+			MMM_TextureManager.instance.reciveFromClientSetTexturePackIndex(lentity, var2.data);
 			break;
 		case MMM_Statics.Server_GetTextureIndex:
 			// サーバー側での管理番号の問い合わせに対して応答する
-			MMM_TextureManager.reciveFromClientGetTexturePackIndex(var1, var2.data);
+			MMM_TextureManager.instance.reciveFromClientGetTexturePackIndex(var1, var2.data);
 			break;
 		case MMM_Statics.Server_GetTexturePackName:
 			// 管理番号に対応するテクスチャパック名を返す。
-			MMM_TextureManager.reciveFromClientGetTexturePackName(var1, var2.data);
+			MMM_TextureManager.instance.reciveFromClientGetTexturePackName(var1, var2.data);
 			break;
 		}
 	}
@@ -173,7 +177,7 @@ public class mod_MMM_MMMLib extends BaseMod {
 
 	// Forge
 	public void serverDisconnect() {
-		MMM_TextureManager.saveTextureServer();
+		MMM_TextureManager.instance.saveTextureServer();
 	}
 
 }

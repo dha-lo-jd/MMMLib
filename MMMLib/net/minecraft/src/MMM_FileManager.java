@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.jar.JarFile;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.server.MinecraftServer;
 
 /**
@@ -25,14 +24,53 @@ public class MMM_FileManager {
 	public static File minecraftJar;
 	public static Map<String, List<File>> fileList = new TreeMap<String, List<File>>();
 	public static File minecraftDir;
-
-	/**
-	 * 検索済みのリストに含まれる列挙ファイルを返す。
-	 * @param pname 検索リスト名。
-	 * @return 列挙されたファイルのリスト。
-	 */
-	public static List<File> getFileList(String pname) {
-		return fileList.get(pname);
+	
+	public static void init() {
+		// 初期化
+		if (MMM_Helper.isClient) {
+			minecraftDir = MMM_Helper.mc.getMinecraftDir();
+		} else {
+			minecraftDir = MinecraftServer.getServer().getFile("");
+		}
+		
+		
+		// mincraft.jarを取得
+		// 開発中用のJar内に含まれていることの対策
+		try {
+			ProtectionDomain ls1 = BaseMod.class.getProtectionDomain();
+			CodeSource ls2 = ls1.getCodeSource();
+			URL ls3 = ls2.getLocation();
+			URI ls4 = ls3.toURI();
+			minecraftJar = new File(ls4);
+//			minecraftJar = new File(BaseMod.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+//			mod_MMM_MMMLib.Debug(String.format("getMincraftFile-file:%s", minecraftJar.getName()));
+			mod_MMM_MMMLib.Debug("getMinecraftFile-file:%s", minecraftJar.getAbsolutePath());
+		} catch (Exception exception) {
+			mod_MMM_MMMLib.Debug("getMinecraftFile-Exception.");
+		}
+		if (minecraftJar == null) {
+			try {
+				ClassLoader lcl1 = BaseMod.class.getClassLoader();
+				String lcls1 = BaseMod.class.getName().concat(".class");
+				URL lclu1 = lcl1.getResource(lcls1);
+				JarURLConnection lclc1 = (JarURLConnection)lclu1.openConnection();
+				JarFile lclj1 = lclc1.getJarFile();
+				minecraftJar = new File(lclj1.getName());
+				mod_MMM_MMMLib.Debug("getMinecraftFile-file:%s", lclj1.getName());
+			} catch (Exception exception) {
+				mod_MMM_MMMLib.Debug("getMinecraftFile-Exception.");
+			}
+		}
+		if (minecraftJar == null) {
+			String ls = System.getProperty("java.class.path");
+			int li = ls.indexOf(';');
+			if (li > -1) {
+				ls = ls.substring(0, li);
+			}
+			minecraftJar = new File(ls);
+			mod_MMM_MMMLib.Debug("getMinecraftFile-file:%s", ls);
+		}
+		
 	}
 
 	/**
@@ -50,15 +88,15 @@ public class MMM_FileManager {
 			llist = new ArrayList<File>();
 			fileList.put(pname, llist);
 		}
-
+		
 		// modsディレクトリの獲得
 		File lmod;
 		if (MMM_Helper.isClient) {
-			lmod = new File(Minecraft.getMinecraftDir(), "/mods/");
+			lmod = new File(MMM_Helper.mc.getMinecraftDir(), "/mods/");
 		} else {
 			lmod = MinecraftServer.getServer().getFile("mods/");
 		}
-
+		
 		mod_MMM_MMMLib.Debug("getModFile:[%s]:%s", pname, lmod.getAbsolutePath());
 		// ファイル・ディレクトリを検索
 		try {
@@ -81,63 +119,21 @@ public class MMM_FileManager {
 				mod_MMM_MMMLib.Debug("getModFile-fail.");
 			}
 			return llist;
-		} catch (Exception exception) {
+		}
+		catch (Exception exception) {
 			mod_MMM_MMMLib.Debug("getModFile-Exception.");
 			return null;
 		}
 	}
 
-	public static void init() {
-		// 初期化
-		if (MMM_Helper.isClient) {
-			minecraftDir = Minecraft.getMinecraftDir();
-		} else {
-			minecraftDir = MinecraftServer.getServer().getFile("");
-		}
-
-		// mincraft.jarを取得
-		// 開発中用のJar内に含まれていることの対策
-		if (minecraftJar == null) {
-			try {
-				ClassLoader lcl1 = BaseMod.class.getClassLoader();
-				String lcls1 = BaseMod.class.getName().concat(".class");
-				URL lclu1 = lcl1.getResource(lcls1);
-				JarURLConnection lclc1 = (JarURLConnection) lclu1.openConnection();
-				JarFile lclj1 = lclc1.getJarFile();
-				minecraftJar = new File(lclj1.getName());
-				mod_MMM_MMMLib.Debug("getMinecraftFile-file:%s", lclj1.getName());
-			} catch (Exception exception) {
-				mod_MMM_MMMLib.Debug("getMinecraftFile-Exception.");
-			}
-		}
-		if (minecraftJar == null) {
-			try {
-				ProtectionDomain ls1 = BaseMod.class.getProtectionDomain();
-				CodeSource ls2 = ls1.getCodeSource();
-				URL ls3 = ls2.getLocation();
-				URI ls4 = ls3.toURI();
-				minecraftJar = new File(ls4);
-				if (!minecraftJar.exists()) {
-					minecraftJar = null;
-				} else {
-					mod_MMM_MMMLib.Debug("getMinecraftFile-file:%s", minecraftJar.getAbsolutePath());
-				}
-				//			minecraftJar = new File(BaseMod.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-				//			mod_MMM_MMMLib.Debug(String.format("getMincraftFile-file:%s", minecraftJar.getName()));
-			} catch (Exception exception) {
-				mod_MMM_MMMLib.Debug("getMinecraftFile-Exception.");
-			}
-		}
-		if (minecraftJar == null) {
-			String ls = System.getProperty("java.class.path");
-			int li = ls.indexOf(';');
-			if (li > -1) {
-				ls = ls.substring(0, li);
-			}
-			minecraftJar = new File(ls);
-			mod_MMM_MMMLib.Debug("getMinecraftFile-file:%s", ls);
-		}
-
+	/**
+	 * 検索済みのリストに含まれる列挙ファイルを返す。
+	 * @param pname 検索リスト名。
+	 * @return 列挙されたファイルのリスト。
+	 */
+	public static List<File> getFileList(String pname) {
+		return fileList.get(pname);
 	}
+
 
 }

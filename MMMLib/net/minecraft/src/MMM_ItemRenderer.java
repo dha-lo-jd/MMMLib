@@ -1,11 +1,10 @@
-package net.minecraft.client.renderer;
+package net.minecraft.src;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.src.MMM_ItemRenderManager;
-import net.minecraft.src.ModLoader;
 
 import org.lwjgl.opengl.GL11;
 
@@ -17,22 +16,23 @@ public class MMM_ItemRenderer extends ItemRenderer {
 	public float equippedProgress;
 	public float prevEquippedProgress;
 
+
 	public MMM_ItemRenderer(Minecraft minecraft) {
 		super(minecraft);
-
+		
 		mc = minecraft;
 	}
 
-	public float getEquippedProgress() {
-		return equippedProgress;
+	public Minecraft getMC() {
+		return mc;
 	}
 
 	public ItemStack getItemToRender() {
 		return itemToRender;
 	}
 
-	public Minecraft getMC() {
-		return mc;
+	public float getEquippedProgress() {
+		return equippedProgress;
 	}
 
 	public float getPrevEquippedProgress() {
@@ -46,7 +46,7 @@ public class MMM_ItemRenderer extends ItemRenderer {
 			MMM_ItemRenderManager lii = MMM_ItemRenderManager.getEXRender(litem);
 			String ltex = lii.getRenderTexture();
 			if (ltex != null) {
-				mc.renderEngine.bindTexture(ltex);
+				this.mc.renderEngine.bindTexture(ltex);
 			}
 			GL11.glPushMatrix();
 			boolean lflag = lii.renderItem(entityliving, itemstack, i);
@@ -55,37 +55,37 @@ public class MMM_ItemRenderer extends ItemRenderer {
 				if (itemstack != null && itemstack.hasEffect() && i == 0) {
 					GL11.glDepthFunc(GL11.GL_EQUAL);
 					GL11.glDisable(GL11.GL_LIGHTING);
-					mc.renderEngine.bindTexture("%blur%/misc/glint.png");
+					this.mc.renderEngine.bindTexture("%blur%/misc/glint.png");
 					GL11.glEnable(GL11.GL_BLEND);
 					GL11.glBlendFunc(GL11.GL_SRC_COLOR, GL11.GL_ONE);
 					float var14 = 0.76F;
 					GL11.glColor4f(0.5F * var14, 0.25F * var14, 0.8F * var14, 1.0F);
 					float var15 = 0.125F;
-
+					
 					GL11.glPushMatrix();
 					GL11.glMatrixMode(GL11.GL_TEXTURE);
 					GL11.glLoadIdentity();
 					GL11.glScalef(var15, var15, var15);
-					float var16 = Minecraft.getSystemTime() % 3000L / 3000.0F * 8.0F;
+					float var16 = (float)(Minecraft.getSystemTime() % 3000L) / 3000.0F * 8.0F;
 					GL11.glTranslatef(var16, 0.0F, 0.0F);
 					GL11.glRotatef(-50.0F, 0.0F, 0.0F, 1.0F);
 					GL11.glMatrixMode(GL11.GL_MODELVIEW);
 					lii.renderItem(entityliving, itemstack, 0);
-					//					renderItemIn2D(var6, 0.0F, 0.0F, 1.0F, 1.0F, 256, 256, 0.0625F);
+//					renderItemIn2D(var6, 0.0F, 0.0F, 1.0F, 1.0F, 256, 256, 0.0625F);
 					GL11.glPopMatrix();
-
+					
 					GL11.glPushMatrix();
 					GL11.glMatrixMode(GL11.GL_TEXTURE);
 					GL11.glLoadIdentity();
 					GL11.glScalef(var15, var15, var15);
-					var16 = Minecraft.getSystemTime() % 4873L / 4873.0F * 8.0F;
+					var16 = (float)(Minecraft.getSystemTime() % 4873L) / 4873.0F * 8.0F;
 					GL11.glTranslatef(-var16, 0.0F, 0.0F);
 					GL11.glRotatef(10.0F, 0.0F, 0.0F, 1.0F);
 					GL11.glMatrixMode(GL11.GL_MODELVIEW);
 					lii.renderItem(entityliving, itemstack, 0);
-					//					renderItemIn2D(var6, 0.0F, 0.0F, 1.0F, 1.0F, 256, 256, 0.0625F);
+//					renderItemIn2D(var6, 0.0F, 0.0F, 1.0F, 1.0F, 256, 256, 0.0625F);
 					GL11.glPopMatrix();
-
+					
 					GL11.glMatrixMode(GL11.GL_TEXTURE);
 					GL11.glLoadIdentity();
 					GL11.glMatrixMode(GL11.GL_MODELVIEW);
@@ -104,15 +104,15 @@ public class MMM_ItemRenderer extends ItemRenderer {
 		itemToRender = null;
 		equippedProgress = 0.0F;
 		prevEquippedProgress = 0.0F;
-
+		
 		try {
 			// ローカル変数を確保
-			itemToRender = (ItemStack) ModLoader.getPrivateValue(ItemRenderer.class, this, 1);
-			equippedProgress = (Float) ModLoader.getPrivateValue(ItemRenderer.class, this, 2);
-			prevEquippedProgress = (Float) ModLoader.getPrivateValue(ItemRenderer.class, this, 3);
+			itemToRender = (ItemStack)ModLoader.getPrivateValue(ItemRenderer.class, this, 1);
+			equippedProgress = (Float)ModLoader.getPrivateValue(ItemRenderer.class, this, 2);
+			prevEquippedProgress = (Float)ModLoader.getPrivateValue(ItemRenderer.class, this, 3);
 		} catch (Exception e) {
 		}
-
+		
 		if (itemToRender != null) {
 			Item litem = itemToRender.getItem();
 			if (MMM_ItemRenderManager.isEXRender(litem)) {
@@ -121,8 +121,9 @@ public class MMM_ItemRenderer extends ItemRenderer {
 				}
 			}
 		}
-
+		
 		super.renderItemInFirstPerson(f);
 	}
+
 
 }

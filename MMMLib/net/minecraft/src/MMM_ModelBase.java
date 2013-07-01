@@ -11,14 +11,16 @@ import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.util.MathHelper;
 
 public abstract class MMM_ModelBase {
+	
+	public static final float PI = (float)Math.PI;
 
 	public Render render;
 
 	// ModelBaseとある程度互換
 	public int textureWidth = 64;
 	public int textureHeight = 32;
-	public float onGround;
 	public float onGrounds[] = new float[] {0.0F, 0.0F};
+	public int dominantArm = 0;
 	public boolean isRiding = false;
 	public boolean isChild = true;
 	public List<MMM_ModelRenderer> boxList = new ArrayList();
