@@ -10,16 +10,16 @@ import java.util.zip.ZipInputStream;
 
 public abstract class MMM_ManagerBase {
 
-	public abstract String getPreFix();
 	/**
 	 * 追加処理の本体
 	 */
 	public abstract boolean append(Class pclass);
 
+	public abstract String getPreFix();
 
 	public void load() {
 		// ロード
-		
+
 		// 開発用
 		Package lpackage = mod_MMM_MMMLib.class.getPackage();
 		String ls = "";
@@ -27,7 +27,7 @@ public abstract class MMM_ManagerBase {
 			ls = mod_MMM_MMMLib.class.getPackage().getName().replace('.', File.separatorChar);
 		}
 		File lf1 = new File(MMM_FileManager.minecraftJar, ls);
-		
+
 		if (lf1.isDirectory()) {
 			// ディレクトリの解析
 			decodeDirectory(lf1);
@@ -35,8 +35,7 @@ public abstract class MMM_ManagerBase {
 			// Zipの解析
 			decodeZip(lf1);
 		}
-		
-		
+
 		// mods
 		for (Entry<String, List<File>> le : MMM_FileManager.fileList.entrySet()) {
 			for (File lf : le.getValue()) {
@@ -70,10 +69,10 @@ public abstract class MMM_ManagerBase {
 			FileInputStream fileinputstream = new FileInputStream(pfile);
 			ZipInputStream zipinputstream = new ZipInputStream(fileinputstream);
 			ZipEntry zipentry;
-			
+
 			do {
 				zipentry = zipinputstream.getNextEntry();
-				if(zipentry == null) {
+				if (zipentry == null) {
 					break;
 				}
 				if (!zipentry.isDirectory()) {
@@ -82,15 +81,14 @@ public abstract class MMM_ManagerBase {
 						loadClass(zipentry.getName());
 					}
 				}
-			} while(true);
-			
+			} while (true);
+
 			zipinputstream.close();
 			fileinputstream.close();
-		}
-		catch (Exception exception) {
+		} catch (Exception exception) {
 			mod_MMM_MMMLib.Debug("add%sZip-Exception.", getPreFix());
 		}
-		
+
 	}
 
 	private void loadClass(String pname) {
@@ -100,7 +98,7 @@ public abstract class MMM_ManagerBase {
 			Package lpackage = mod_MMM_MMMLib.class.getPackage();
 			String lclassname = pname.replace(".class", "");
 			Class lclass;
-			if(lpackage != null) {
+			if (lpackage != null) {
 				lclassname = (new StringBuilder(String.valueOf(lpackage.getName()))).append(".").append(lclassname).toString();
 				lclass = lclassLoader.loadClass(lclassname);
 			} else {
@@ -115,25 +113,25 @@ public abstract class MMM_ManagerBase {
 				mod_MMM_MMMLib.Debug("get%sClass-fail: %s", getPreFix(), lclassname);
 			}
 			/*
-            if (!(MMM_ModelStabilizerBase.class).isAssignableFrom(lclass) || Modifier.isAbstract(lclass.getModifiers())) {
-            	mod_MMM_MMMLib.Debug(String.format(String.format("get%sClass-fail: %s", pprefix, lclassname)));
-                return;
-            }
-            
-            MMM_ModelStabilizerBase lms = (MMM_ModelStabilizerBase)lclass.newInstance();
-            pmap.put(lms.getName(), lms);
-            mod_MMM_MMMLib.Debug(String.format("get%sClass-done: %s[%s]", pprefix, lclassname, lms.getName()));
-            */
-		}
-		catch (Exception exception) {
+			 * if (!(MMM_ModelStabilizerBase.class).isAssignableFrom(lclass) ||
+			 * Modifier.isAbstract(lclass.getModifiers())) {
+			 * mod_MMM_MMMLib.Debug
+			 * (String.format(String.format("get%sClass-fail: %s", pprefix,
+			 * lclassname))); return; }
+			 * 
+			 * MMM_ModelStabilizerBase lms =
+			 * (MMM_ModelStabilizerBase)lclass.newInstance();
+			 * pmap.put(lms.getName(), lms);
+			 * mod_MMM_MMMLib.Debug(String.format("get%sClass-done: %s[%s]",
+			 * pprefix, lclassname, lms.getName()));
+			 */
+		} catch (Exception exception) {
 			mod_MMM_MMMLib.Debug("get%sClass-Exception.", getPreFix());
-		}
-		catch (Error error) {
+		} catch (Error error) {
 			mod_MMM_MMMLib.Debug("get%sClass-Error: %s", getPreFix(), pname);
 			error.printStackTrace();
 		}
-		
+
 	}
-	
-	
+
 }
