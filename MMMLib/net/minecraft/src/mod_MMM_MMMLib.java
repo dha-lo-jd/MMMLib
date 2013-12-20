@@ -1,9 +1,14 @@
 package net.minecraft.src;
 
-import java.lang.reflect.Field;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.NetClientHandler;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.network.NetServerHandler;
+import net.minecraft.network.packet.Packet250CustomPayload;
 
 public class mod_MMM_MMMLib extends BaseMod {
 
@@ -28,7 +33,7 @@ public class mod_MMM_MMMLib extends BaseMod {
 
 
 	public static void Debug(String pText, Object... pVals) {
-		// ƒfƒoƒbƒOƒƒbƒZ[ƒW
+		// ãƒ‡ãƒãƒƒã‚°ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
 		if (cfg_isDebugMessage) {
 			System.out.println(String.format("MMMLib-" + pText, pVals));
 		}
@@ -51,7 +56,7 @@ public class mod_MMM_MMMLib extends BaseMod {
 
 	@Override
 	public void load() {
-		// ‰Šú‰»
+		// åˆæœŸåŒ–
 		Debug(MMM_Helper.isClient ? "Client" : "Server");
 		Debug(MMM_Helper.isForge ? "Forge" : "Modloader");
 		MMM_FileManager.init();
@@ -67,26 +72,26 @@ public class mod_MMM_MMMLib extends BaseMod {
 			MMM_EntityDummy.isEnable = true;
 		}
 		
-		// “Æ©ƒpƒPƒbƒg—pƒ`ƒƒƒ“ƒlƒ‹
+		// ç‹¬è‡ªãƒ‘ã‚±ãƒƒãƒˆç”¨ãƒãƒ£ãƒ³ãƒãƒ«
 		ModLoader.registerPacketChannel(this, "MMM|Upd");
 		
-		// Forgeg—p‚Í–³Œø
+		// Forgeä½¿ç”¨æ™‚ã¯ç„¡åŠ¹
 		cfg_renderHacking &= !MMM_Helper.isForge;
 	}
 
 	@Override
 	public void modsLoaded() {
-		// ƒoƒCƒI[ƒ€‚Éİ’è‚³‚ê‚½ƒXƒ|[ƒ“î•ñ‚ğ’u‚«Š·‚¦B
+		// ãƒã‚¤ã‚ªãƒ¼ãƒ ã«è¨­å®šã•ã‚ŒãŸã‚¹ãƒãƒ¼ãƒ³æƒ…å ±ã‚’ç½®ãæ›ãˆã€‚
 		MMM_Helper.replaceBaiomeSpawn();
 		
-		// ƒeƒNƒXƒ`ƒƒƒpƒbƒN‚Ì\’z
+		// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ‘ãƒƒã‚¯ã®æ§‹ç¯‰
 		MMM_TextureManager.instance.loadTextures();
-		// ƒ[ƒh
+		// ãƒ­ãƒ¼ãƒ‰
 		if (MMM_Helper.isClient) {
-			// ƒeƒNƒXƒ`ƒƒƒpƒbƒN‚Ì\’z
+			// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ‘ãƒƒã‚¯ã®æ§‹ç¯‰
 //			MMM_TextureManager.loadTextures();
 			MMM_StabilizerManager.loadStabilizer();
-			// ƒeƒNƒXƒ`ƒƒƒCƒ“ƒfƒbƒNƒX‚Ì\’z
+			// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã®æ§‹ç¯‰
 			Debug("Localmode: InitTextureList.");
 			MMM_TextureManager.instance.initTextureList(true);
 		} else {
@@ -111,7 +116,7 @@ public class mod_MMM_MMMLib extends BaseMod {
 	@Override
 	public boolean onTickInGame(float var1, Minecraft var2) {
 		if (cfg_isDebugView && MMM_Helper.isClient) {
-			// ƒ_ƒ~[ƒ}[ƒJ[‚Ì•\¦—pˆ—
+			// ãƒ€ãƒŸãƒ¼ãƒãƒ¼ã‚«ãƒ¼ã®è¡¨ç¤ºç”¨å‡¦ç†
 			if (var2.theWorld != null && var2.thePlayer != null) {
 				try {
 					for (Iterator<MMM_EntityDummy> li = MMM_EntityDummy.appendList.iterator(); li.hasNext();) {
@@ -124,12 +129,12 @@ public class mod_MMM_MMMLib extends BaseMod {
 			}
 		}
 		
-		// ƒAƒCƒeƒ€ƒŒƒ“ƒ_[‚ğƒI[ƒo[ƒ‰ƒCƒh
+		// ã‚¢ã‚¤ãƒ†ãƒ ãƒ¬ãƒ³ãƒ€ãƒ¼ã‚’ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰
 		if (cfg_renderHacking && MMM_Helper.isClient) {
 			MMM_Client.setItemRenderer();
 		}
 		
-		// ƒeƒNƒXƒ`ƒƒŠÇ——p
+		// ãƒ†ã‚¯ã‚¹ãƒãƒ£ç®¡ç†ç”¨
 		MMM_TextureManager.instance.onUpdate();
 		
 		return true;
@@ -137,7 +142,7 @@ public class mod_MMM_MMMLib extends BaseMod {
 
 	@Override
 	public void serverCustomPayload(NetServerHandler var1, Packet250CustomPayload var2) {
-		// ƒT[ƒo‘¤‚Ì“®ì
+		// ã‚µãƒ¼ãƒå´ã®å‹•ä½œ
 		byte lmode = var2.data[0];
 		int leid = 0;
 		Entity lentity = null;
@@ -151,15 +156,15 @@ public class mod_MMM_MMMLib extends BaseMod {
 		
 		switch (lmode) {
 		case MMM_Statics.Server_SetTexturePackIndex:
-			// ƒT[ƒo[‘¤‚ÌEntity‚É‘Î‚µ‚ÄƒeƒNƒXƒ`ƒƒƒCƒ“ƒfƒbƒNƒX‚ğİ’è‚·‚é
+			// ã‚µãƒ¼ãƒãƒ¼å´ã®Entityã«å¯¾ã—ã¦ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’è¨­å®šã™ã‚‹
 			MMM_TextureManager.instance.reciveFromClientSetTexturePackIndex(lentity, var2.data);
 			break;
 		case MMM_Statics.Server_GetTextureIndex:
-			// ƒT[ƒo[‘¤‚Å‚ÌŠÇ—”Ô†‚Ì–â‚¢‡‚í‚¹‚É‘Î‚µ‚Ä‰“š‚·‚é
+			// ã‚µãƒ¼ãƒãƒ¼å´ã§ã®ç®¡ç†ç•ªå·ã®å•ã„åˆã‚ã›ã«å¯¾ã—ã¦å¿œç­”ã™ã‚‹
 			MMM_TextureManager.instance.reciveFromClientGetTexturePackIndex(var1, var2.data);
 			break;
 		case MMM_Statics.Server_GetTexturePackName:
-			// ŠÇ—”Ô†‚É‘Î‰‚·‚éƒeƒNƒXƒ`ƒƒƒpƒbƒN–¼‚ğ•Ô‚·B
+			// ç®¡ç†ç•ªå·ã«å¯¾å¿œã™ã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ‘ãƒƒã‚¯åã‚’è¿”ã™ã€‚
 			MMM_TextureManager.instance.reciveFromClientGetTexturePackName(var1, var2.data);
 			break;
 		}

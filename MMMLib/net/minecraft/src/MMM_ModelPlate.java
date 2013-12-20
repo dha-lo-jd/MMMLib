@@ -1,8 +1,11 @@
 package net.minecraft.src;
 
+import net.minecraft.client.model.PositionTextureVertex;
+import net.minecraft.client.model.TexturedQuad;
+
 public class MMM_ModelPlate extends MMM_ModelBoxBase {
 
-	// ŒİŠ·—pƒpƒ‰ƒ[ƒ^[
+	// äº’æ›ç”¨ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ¼
 	@Deprecated
 	public static final int planeXY		= 0;
 	@Deprecated
@@ -17,9 +20,9 @@ public class MMM_ModelPlate extends MMM_ModelBoxBase {
 	public static final int planeXZInv	= 6;
 
 	/*
-	 * ‚±‚¿‚ç‚ğg—p‚µ‚Ä‰º‚³‚¢B
-	 * ƒ{ƒbƒNƒX‚ğì‚Á‚½‚Æ“¯‚¶ƒ}ƒbƒsƒ“ƒO‚É‚È‚é‚æ‚¤‚É’²®‚µ‚Ä‚Ü‚·B
-	 * ƒ}ƒbƒsƒ“ƒO“I‚É¶‰E‚Ì–Ê‚Í©—Í‚ÅˆÚ“®‚µ‚È‚¯‚ê‚Î”½“]‚³‚ê‚Ü‚¹‚ñA‘OŒã‚ª‹t‚É‚È‚è‚Ü‚·B
+	 * ã“ã¡ã‚‰ã‚’ä½¿ç”¨ã—ã¦ä¸‹ã•ã„ã€‚
+	 * ãƒœãƒƒã‚¯ã‚¹ã‚’ä½œã£ãŸæ™‚ã¨åŒã˜ãƒãƒƒãƒ”ãƒ³ã‚°ã«ãªã‚‹ã‚ˆã†ã«èª¿æ•´ã—ã¦ã¾ã™ã€‚
+	 * ãƒãƒƒãƒ”ãƒ³ã‚°çš„ã«å·¦å³ã®é¢ã¯è‡ªåŠ›ã§ç§»å‹•ã—ãªã‘ã‚Œã°åè»¢ã•ã‚Œã¾ã›ã‚“ã€å‰å¾ŒãŒé€†ã«ãªã‚Šã¾ã™ã€‚
 	 */
 	public static final int planeXYFront	= 0x10;
 	public static final int planeXYBack		= 0x14;
@@ -51,7 +54,7 @@ public class MMM_ModelPlate extends MMM_ModelBoxBase {
 		boolean lotherplane = (pPlane & 0x04) > 0;
 		int lPlane = pPlane & 0x03;
 		
-		// i1 ‚Í•½–Ê‚Ì¶¬ˆÊ’u
+		// i1 ã¯å¹³é¢ã®ç”Ÿæˆä½ç½®
 		switch (lPlane) {
 		case planeXY:
 			// xy
@@ -117,7 +120,7 @@ public class MMM_ModelPlate extends MMM_ModelBoxBase {
 		}
 		
 		quadList = new TexturedQuad[1];
-		// –Ê‚Ì–@–Ê‚ğ”½“]‚·‚é
+		// é¢ã®æ³•é¢ã‚’åè»¢ã™ã‚‹
 		if (modelrenderer.mirror) {
 			if (lPlane == 0) {
 				// xy
@@ -204,7 +207,7 @@ public class MMM_ModelPlate extends MMM_ModelBoxBase {
 			}
 		} else {
 			if (lotherplane) {
-				// ‹tü‚è
+				// é€†å‘¨ã‚Š
 				quadList[0] = new TexturedQuad(
 						new PositionTextureVertex[] {
 								vertexPositions[0],

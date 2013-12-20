@@ -1,5 +1,12 @@
 package net.minecraft.src;
 
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.entity.Entity;
+
 import org.lwjgl.opengl.EXTRescaleNormal;
 import org.lwjgl.opengl.GL11;
 
@@ -9,10 +16,10 @@ public class MMM_GuiVisibleSelect extends GuiScreen {
 	public MMM_GuiToggleButton select[] = new MMM_GuiToggleButton[32];
 	public MMM_EntityCaps target;
 	public Entity owner;
-	protected float fyaw;
-	protected float fpitch;
-	protected int flastx;
-	protected int flasty;
+	public float fyaw;
+	public float fpitch;
+	public int flastx;
+	public int flasty;
 
 
 	public MMM_GuiVisibleSelect(GuiScreen pOwnerScreen, MMM_EntityCaps pTarget) {
@@ -45,7 +52,7 @@ public class MMM_GuiVisibleSelect extends GuiScreen {
 	}
 
 	/**
-	 * “Æ©ƒ{ƒ^ƒ“‚ğ’Ç‰Á‚·‚éB
+	 * ç‹¬è‡ªãƒœã‚¿ãƒ³ã‚’è¿½åŠ ã™ã‚‹ã€‚
 	 */
 	public void initAddetionalButton() {
 		buttonList.add(new MMM_GuiToggleButton(100, width - 80 * (1 + 34 / 12), (34 % 12) * 20, 80, 20, "Back"));
@@ -77,7 +84,7 @@ public class MMM_GuiVisibleSelect extends GuiScreen {
 	}
 
 	@Override
-	protected void actionPerformed(GuiButton par1GuiButton) {
+	public void actionPerformed(GuiButton par1GuiButton) {
 		if (par1GuiButton.id < 32) {
 			((MMM_GuiToggleButton)par1GuiButton).isDown = !((MMM_GuiToggleButton)par1GuiButton).isDown;
 			
@@ -97,14 +104,14 @@ public class MMM_GuiVisibleSelect extends GuiScreen {
 	}
 
 	@Override
-	protected void mouseClicked(int par1, int par2, int par3) {
+	public void mouseClicked(int par1, int par2, int par3) {
 		super.mouseClicked(par1, par2, par3);
 		flastx = par1 - (int)fyaw;
 		flasty = par2 - (int)fpitch;
 	}
 
 	@Override
-	protected void mouseClickMove(int par1, int par2, int par3, long par4) {
+	public void mouseClickMove(int par1, int par2, int par3, long par4) {
 		super.mouseClickMove(par1, par2, par3, par4);
 		fyaw = (par1 - flastx) % 360F;
 		fpitch = (par2 - flasty) % 360F;

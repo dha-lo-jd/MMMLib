@@ -1,9 +1,13 @@
 package net.minecraft.src;
 
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.client.IItemRenderer;
+
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
-
-import net.minecraftforge.client.IItemRenderer;
 
 public class MMM_ItemRendererForge implements IItemRenderer {
 
@@ -77,7 +81,7 @@ public class MMM_ItemRendererForge implements IItemRenderer {
 		}
 	}
 
-	protected void renderItem(ItemStack item, EntityLivingBase pEntity, MMM_ItemRenderManager pItemRenderManager) {
+	public void renderItem(ItemStack item, EntityLivingBase pEntity, MMM_ItemRenderManager pItemRenderManager) {
 		if (item.getItem().requiresMultipleRenderPasses()) {
 			pItemRenderManager.renderItemLocal(pEntity, item, 0);
 			float var9 = 1.0F;

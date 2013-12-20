@@ -1,8 +1,12 @@
 package net.minecraft.src;
 
+import net.minecraft.entity.Entity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
+
 /**
- * ƒAƒCƒeƒ€—p‚Ì“ÁêƒŒƒ“ƒ_[‚ÉŒp³‚³‚¹‚éƒCƒ“ƒ^[ƒtƒF[ƒXB
- * Œ»óAŒp³‚³‚¹‚Ä‚¢‚È‚­‚Ä‚àƒƒ\ƒbƒh‚ªItem‚É‹Lq‚³‚ê‚Ä‚¢‚ê‚Î“®ì‚·‚éB
+ * ã‚¢ã‚¤ãƒ†ãƒ ç”¨ã®ç‰¹æ®Šãƒ¬ãƒ³ãƒ€ãƒ¼ã«ç¶™æ‰¿ã•ã›ã‚‹ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ãƒ¼ã‚¹ã€‚
+ * ç¾çŠ¶ã€ç¶™æ‰¿ã•ã›ã¦ã„ãªãã¦ã‚‚ãƒ¡ã‚½ãƒƒãƒ‰ãŒItemã«è¨˜è¿°ã•ã‚Œã¦ã„ã‚Œã°å‹•ä½œã™ã‚‹ã€‚
  */
 public interface MMM_IItemRenderManager {
 
@@ -12,7 +16,7 @@ public interface MMM_IItemRenderManager {
 
 
 	/**
-	 * ƒAƒCƒeƒ€‚Ì•`‰æ‚Ì‚İAˆÊ’u•â³‚Í‚µ‚È‚¢B
+	 * ã‚¢ã‚¤ãƒ†ãƒ ã®æç”»ã®ã¿ã€ä½ç½®è£œæ­£ã¯ã—ãªã„ã€‚
 	 * @param pEntity
 	 * @param pItemStack
 	 * @param pIndex

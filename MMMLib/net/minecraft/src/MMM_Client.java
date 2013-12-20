@@ -2,67 +2,28 @@ package net.minecraft.src;
 
 import static net.minecraft.src.mod_MMM_MMMLib.Debug;
 
-import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Random;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.NetClientHandler;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.projectile.EntityArrow;
+import net.minecraft.network.packet.Packet250CustomPayload;
+import net.minecraft.util.MathHelper;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
 
 import org.lwjgl.opengl.GL11;
 
 public class MMM_Client {
 
 	public static MMM_ItemRenderer itemRenderer;
-
-	/**
-	 * ‰Šú‰»ŽžŽÀsƒR[ƒh
-	 */
-	public static void init() {
-		try {
-			// TODO: ƒo[ƒWƒ‡ƒ“ƒAƒbƒvŽž‚É‚ÍŠm”F‚·‚é‚±‚Æ
-			List lresourcePacks = (List)ModLoader.getPrivateValue(Minecraft.class, Minecraft.getMinecraft(), 63);
-			lresourcePacks.add(new MMM_ModOldResourcePack(mod_MMM_MMMLib.class));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	public static void setItemRenderer() {
-		if (itemRenderer == null) {
-			itemRenderer = new MMM_ItemRenderer(MMM_Helper.mc);
-		}
-		if (!(MMM_Helper.mc.entityRenderer.itemRenderer instanceof MMM_ItemRenderer)) {
-			mod_MMM_MMMLib.Debug("replace entityRenderer.itemRenderer.");
-			MMM_Helper.mc.entityRenderer.itemRenderer = itemRenderer;
-		}
-		if (!(RenderManager.instance.itemRenderer instanceof MMM_ItemRenderer)) {
-			mod_MMM_MMMLib.Debug("replace RenderManager.itemRenderer.");
-			RenderManager.instance.itemRenderer = itemRenderer;
-		}
-		// GUI‚Ì•\Ž¦‚ð•Ï‚¦‚é‚É‚ÍíŽžŠÄŽ‹‚ª•K—vH
-	}
-
-	public static void clientCustomPayload(NetClientHandler var1, Packet250CustomPayload var2) {
-		// ƒNƒ‰ƒCƒAƒ“ƒg‘¤‚Ì“ÁŽêƒpƒPƒbƒgŽóM“®ì
-		byte lmode = var2.data[0];
-		int leid = 0;
-		Entity lentity = null;
-		if ((lmode & 0x80) != 0) {
-			leid = MMM_Helper.getInt(var2.data, 1);
-			lentity = MMM_Helper.getEntity(var2.data, 1, MMM_Helper.mc.theWorld);
-			if (lentity == null) return;
-		}
-		Debug("MMM|Upd Clt Call[%2x:%d].", lmode, leid);
-		
-		switch (lmode) {
-		case MMM_Statics.Client_SetTextureIndex:
-			// –â‚¢‡‚í‚¹‚½ƒeƒNƒXƒ`ƒƒƒpƒbƒN‚ÌŠÇ—”Ô†‚ðŽó‚¯Žæ‚é
-			MMM_TextureManager.instance.reciveFormServerSetTexturePackIndex(var2.data);
-			break;
-		case MMM_Statics.Client_SetTexturePackName:
-			// ŠÇ—”Ô†‚É“o˜^‚³‚ê‚Ä‚¢‚éƒeƒNƒXƒ`ƒƒƒpƒbƒN‚Ìî•ñ‚ðŽó‚¯Žæ‚é
-			MMM_TextureManager.instance.reciveFromServerSetTexturePackName(var2.data);
-			break;
-		}
-	}
 
 	public static void clientConnect(NetClientHandler var1) {
 		if (MMM_Helper.mc.isIntegratedServerRunning()) {
@@ -74,15 +35,59 @@ public class MMM_Client {
 		}
 	}
 
-	public static void clientDisconnect(NetClientHandler var1) {
-//		super.clientDisconnect(var1);
-//		Debug("Localmode: InitTextureList.");
-//		MMM_TextureManager.initTextureList(true);
+	public static void clientCustomPayload(NetClientHandler var1, Packet250CustomPayload var2) {
+		// ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆå´ã®ç‰¹æ®Šãƒ‘ã‚±ãƒƒãƒˆå—ä¿¡å‹•ä½œ
+		byte lmode = var2.data[0];
+		int leid = 0;
+		Entity lentity = null;
+		if ((lmode & 0x80) != 0) {
+			leid = MMM_Helper.getInt(var2.data, 1);
+			lentity = MMM_Helper.getEntity(var2.data, 1, MMM_Helper.mc.theWorld);
+			if (lentity == null)
+				return;
+		}
+		Debug("MMM|Upd Clt Call[%2x:%d].", lmode, leid);
+
+		switch (lmode) {
+		case MMM_Statics.Client_SetTextureIndex:
+			// å•ã„åˆã‚ã›ãŸãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ‘ãƒƒã‚¯ã®ç®¡ç†ç•ªå·ã‚’å—ã‘å–ã‚‹
+			MMM_TextureManager.instance.reciveFormServerSetTexturePackIndex(var2.data);
+			break;
+		case MMM_Statics.Client_SetTexturePackName:
+			// ç®¡ç†ç•ªå·ã«ç™»éŒ²ã•ã‚Œã¦ã„ã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ‘ãƒƒã‚¯ã®æƒ…å ±ã‚’å—ã‘å–ã‚‹
+			MMM_TextureManager.instance.reciveFromServerSetTexturePackName(var2.data);
+			break;
+		}
 	}
 
-	public static void sendToServer(byte[] pData) {
-		ModLoader.clientSendPacket(new Packet250CustomPayload("MMM|Upd", pData));
-		Debug("MMM|Upd:%2x:NOEntity", pData[0]);
+	public static void clientDisconnect(NetClientHandler var1) {
+		// super.clientDisconnect(var1);
+		// Debug("Localmode: InitTextureList.");
+		// MMM_TextureManager.initTextureList(true);
+	}
+
+	public static World getMCtheWorld() {
+		if (MMM_Helper.mc != null) {
+			return MMM_Helper.mc.theWorld;
+		}
+		return null;
+	}
+
+	public static String getVersionString() {
+		return Minecraft.func_110431_a(Minecraft.getMinecraft());
+	}
+
+	/**
+	 * åˆæœŸåŒ–æ™‚å®Ÿè¡Œã‚³ãƒ¼ãƒ‰
+	 */
+	public static void init() {
+		try {
+			// TODO: ãƒãƒ¼ã‚¸ãƒ§ãƒ³ã‚¢ãƒƒãƒ—æ™‚ã«ã¯ç¢ºèªã™ã‚‹ã“ã¨
+			List lresourcePacks = (List) ModLoader.getPrivateValue(Minecraft.class, Minecraft.getMinecraft(), 63);
+			lresourcePacks.add(new MMM_ModOldResourcePack(mod_MMM_MMMLib.class));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public static boolean isIntegratedServerRunning() {
@@ -90,19 +95,19 @@ public class MMM_Client {
 	}
 
 	/**
-	 * Duo‚ðŽg‚¤Žž‚Í•K‚¸Render‘¤‚Ì‚±‚ÌŠÖ”‚ð’u‚«Š·‚¦‚é‚±‚ÆB
+	 * Duoã‚’ä½¿ã†æ™‚ã¯å¿…ãšRenderå´ã®ã“ã®é–¢æ•°ã‚’ç½®ãæ›ãˆã‚‹ã“ã¨ã€‚
+	 * 
 	 * @param par1EntityLiving
 	 * @param par2
 	 */
-	public static void renderArrowsStuckInEntity(EntityLivingBase par1EntityLiving, float par2,
-			Render pRender, MMM_ModelBase pModel) {
+	public static void renderArrowsStuckInEntity(EntityLivingBase par1EntityLiving, float par2, Render pRender, MMM_ModelBase pModel) {
 		int lacount = par1EntityLiving.getArrowCountInEntity();
-		
+
 		if (lacount > 0) {
 			EntityArrow larrow = new EntityArrow(par1EntityLiving.worldObj, par1EntityLiving.posX, par1EntityLiving.posY, par1EntityLiving.posZ);
-			Random lrand = new Random((long)par1EntityLiving.entityId);
+			Random lrand = new Random(par1EntityLiving.entityId);
 			RenderHelper.disableStandardItemLighting();
-			
+
 			for (int var6 = 0; var6 < lacount; ++var6) {
 				GL11.glPushMatrix();
 				GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -123,8 +128,8 @@ public class MMM_Client {
 				var10 *= -1.0F;
 				var11 *= -1.0F;
 				float var15 = MathHelper.sqrt_float(var9 * var9 + var11 * var11);
-				larrow.prevRotationYaw = larrow.rotationYaw = (float)(Math.atan2((double)var9, (double)var11) * 180.0D / Math.PI);
-				larrow.prevRotationPitch = larrow.rotationPitch = (float)(Math.atan2((double)var10, (double)var15) * 180.0D / Math.PI);
+				larrow.prevRotationYaw = larrow.rotationYaw = (float) (Math.atan2(var9, var11) * 180.0D / Math.PI);
+				larrow.prevRotationPitch = larrow.rotationPitch = (float) (Math.atan2(var10, var15) * 180.0D / Math.PI);
 				double var16 = 0.0D;
 				double var18 = 0.0D;
 				double var20 = 0.0D;
@@ -132,34 +137,42 @@ public class MMM_Client {
 				pRender.renderManager.renderEntityWithPosYaw(larrow, var16, var18, var20, var22, par2);
 				GL11.glPopMatrix();
 			}
-			
+
 			RenderHelper.enableStandardItemLighting();
 		}
 	}
 
-	public static World getMCtheWorld() {
-		if (MMM_Helper.mc !=  null) {
-			return MMM_Helper.mc.theWorld;
+	public static void sendToServer(byte[] pData) {
+		ModLoader.clientSendPacket(new Packet250CustomPayload("MMM|Upd", pData));
+		Debug("MMM|Upd:%2x:NOEntity", pData[0]);
+	}
+
+	public static void setItemRenderer() {
+		if (itemRenderer == null) {
+			itemRenderer = new MMM_ItemRenderer(MMM_Helper.mc);
 		}
-		return null;
+		if (!(MMM_Helper.mc.entityRenderer.itemRenderer instanceof MMM_ItemRenderer)) {
+			mod_MMM_MMMLib.Debug("replace entityRenderer.itemRenderer.");
+			MMM_Helper.mc.entityRenderer.itemRenderer = itemRenderer;
+		}
+		if (!(RenderManager.instance.itemRenderer instanceof MMM_ItemRenderer)) {
+			mod_MMM_MMMLib.Debug("replace RenderManager.itemRenderer.");
+			RenderManager.instance.itemRenderer = itemRenderer;
+		}
+		// GUIã®è¡¨ç¤ºã‚’å¤‰ãˆã‚‹ã«ã¯å¸¸æ™‚ç›£è¦–ãŒå¿…è¦ï¼Ÿ
 	}
 
 	public static void setLightmapTextureCoords(int pValue) {
-//		int ls = pValue % 65536;
-//		int lt = pValue / 65536;
+		// int ls = pValue % 65536;
+		// int lt = pValue / 65536;
 		int ls = pValue & 0xffff;
 		int lt = pValue >>> 16;
-		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit,
-				(float) ls / 1.0F, (float) lt / 1.0F);
+		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, ls / 1.0F, lt / 1.0F);
 	}
 
 	public static void setTexture(ResourceLocation pRLocation) {
 		if (pRLocation != null) {
 			MMM_Helper.mc.func_110434_K().func_110577_a(pRLocation);
 		}
-	}
-
-	public static String getVersionString() {
-		return Minecraft.func_110431_a(Minecraft.getMinecraft());
 	}
 }

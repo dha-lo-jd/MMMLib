@@ -1,5 +1,9 @@
 package net.minecraft.src;
 
+import net.minecraft.client.model.ModelBase;
+import net.minecraft.client.renderer.entity.RendererLivingEntity;
+import net.minecraft.entity.Entity;
+
 public class MMM_ModelBaseNihil extends ModelBase {
 
 	public RendererLivingEntity rendererLivingEntity;
@@ -8,11 +12,11 @@ public class MMM_ModelBaseNihil extends ModelBase {
 	public boolean isModelAlphablend;
 	public MMM_IModelBaseMMM capsLink;
 	public int lighting;
-	protected MMM_IModelCaps entityCaps;
-	protected boolean isRendering;
+	public MMM_IModelCaps entityCaps;
+	public boolean isRendering;
 	/**
-	 * ƒŒƒ“ƒ_ƒŠƒ“ƒO‚ªÀs‚³‚ê‚½‰ñ”B
-	 * ƒ_ƒ[ƒW‚È‚Ç‚Ì‘ÎôB
+	 * ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ãŒå®Ÿè¡Œã•ã‚ŒãŸå›æ•°ã€‚
+	 * ãƒ€ãƒ¡ãƒ¼ã‚¸æ™‚ãªã©ã®å¯¾ç­–ã€‚
 	 */
 	public int renderCount;
 

@@ -7,15 +7,21 @@ import java.util.Set;
 
 import javax.imageio.ImageIO;
 
+import net.minecraft.client.resources.DefaultResourcePack;
+import net.minecraft.client.resources.ResourcePack;
+import net.minecraft.client.resources.data.MetadataSection;
+import net.minecraft.client.resources.data.MetadataSerializer;
+import net.minecraft.util.ResourceLocation;
+
 import com.google.gson.JsonObject;
 
 /**
- * ŒÃ‚¢ƒŠƒ\[ƒX‚ğ“Ç‚İ‚±‚Ü‚¹‚é‚½‚ß‚ÌƒpƒbƒP[ƒWw’è
- * ƒR[ƒh‚ÍModloader‚ÌŠÛƒpƒNƒŠ
+ * å¤ã„ãƒªã‚½ãƒ¼ã‚¹ã‚’èª­ã¿ã“ã¾ã›ã‚‹ãŸã‚ã®ãƒ‘ãƒƒã‚±ãƒ¼ã‚¸æŒ‡å®š
+ * ã‚³ãƒ¼ãƒ‰ã¯Modloaderã®ä¸¸ãƒ‘ã‚¯ãƒª
  */
 public class MMM_ModOldResourcePack implements ResourcePack {
 
-	protected final Class modClass;
+	public final Class modClass;
 
 	public MMM_ModOldResourcePack(Class modClass) {
 		this.modClass = modClass;
