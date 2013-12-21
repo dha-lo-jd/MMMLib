@@ -34,7 +34,7 @@ public class MMM_StabilizerManager extends MMM_ManagerBase {
 	}
 
 	public static void loadStabilizer() {
-		(new MMM_StabilizerManager()).load();
+		(new MMM_StabilizerManager()).load(MMM_ModelStabilizerBase.class);
 	}
 
 	/**

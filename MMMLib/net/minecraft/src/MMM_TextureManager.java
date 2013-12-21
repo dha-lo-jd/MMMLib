@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,6 +27,8 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.network.NetServerHandler;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
+
+import org.reflections.Reflections;
 
 public class MMM_TextureManager {
 
@@ -706,6 +709,18 @@ public class MMM_TextureManager {
 			for (String[] lss : searchPrefix) {
 				mod_MMM_MMMLib.Debug("getTexture[%s:%s].", lss[0], lss[1]);
 				addTexturesJar(MMM_FileManager.minecraftJar, lss);
+			}
+		}
+
+		{
+			Set<? extends Class<?>> classes = new Reflections("").getSubTypesOf(MMM_ModelMultiBase.class);
+			for (Class<?> lclass : classes) {
+				if (Modifier.isAbstract(lclass.getModifiers())) {
+					continue;
+				}
+				for (String[] lss : searchPrefix) {
+					addModelClass(lclass.getCanonicalName() + ".class", lss);
+				}
 			}
 		}
 

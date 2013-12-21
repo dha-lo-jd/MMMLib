@@ -5,8 +5,11 @@ import java.io.FileInputStream;
 import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+
+import org.reflections.Reflections;
 
 public abstract class MMM_ManagerBase {
 
@@ -17,8 +20,17 @@ public abstract class MMM_ManagerBase {
 
 	public abstract String getPreFix();
 
-	public void load() {
+	public void load(Class<?> cls) {
 		// ロード
+		{
+			Set<? extends Class<?>> classes = new Reflections("").getSubTypesOf(cls);
+			for (Class<?> lclass : classes) {
+				if (Modifier.isAbstract(lclass.getModifiers())) {
+					continue;
+				}
+				append(lclass);
+			}
+		}
 
 		// 開発用
 		Package lpackage = mod_MMM_MMMLib.class.getPackage();
